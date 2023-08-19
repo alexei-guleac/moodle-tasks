@@ -1,0 +1,35 @@
+server:
+  servlet:
+    context-path: "/api"
+    session:
+      timeout: 120
+      persistent: false
+      cookie:
+        secure: true
+        http-only: true
+
+
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  jackson:
+    time-zone:
+      "Europe/Chisinau"
+    date-format: "dd.MM.yyyy"
+
+  jpa:
+    show-sql: true
+
+  profiles:
+    active: dev
+
+logging:
+  group:
+    swagger: springfox.documentation.spring.web.readers.operation, springfox.documentation.spring.web.scanners
+    apache-http-client-impl-auth: org.apache.http.impl.client.TargetAuthenticationStrategy
+  level:
+    swagger: WARN
+    apache-http-client-impl-auth: ERROR
+    org:
+      hibernate:
+        SQL: OFF
