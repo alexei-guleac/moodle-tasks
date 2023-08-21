@@ -1,15 +1,42 @@
 package com.example.demo;
 
 import com.example.demo.model.Weather;
+import com.example.demo.service.DrivingValidator;
+import com.example.demo.service.FishingValidator;
+import com.example.demo.service.WalkingValidator;
+import com.example.demo.service.WeatherDayRatingCalculator;
+import com.example.demo.service.WeatherIsComboCalculator;
+import com.example.demo.service.WeatherValidator;
+import com.example.demo.service.interfaces.ActionValidator;
 import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class WeatherDataTests {
+
+  @Autowired
+  DrivingValidator drivingValidator;
+
+  @Autowired
+  FishingValidator fishingValidator;
+
+  @Autowired
+  WalkingValidator walkingValidator;
+
+  @Autowired
+  WeatherDayRatingCalculator weatherDayRatingCalculator;
+
+  @Autowired
+  WeatherIsComboCalculator weatherIsComboCalculator;
+
+  @Autowired
+  WeatherValidator weatherValidator;
+
 
   static Weather weatherSun = new Weather();
   static Weather weatherRain = new Weather();
@@ -119,140 +146,140 @@ class WeatherDataTests {
   @Tag("DEV")
   @Test
   void testIsDayGoodForWalkSun() {
-    Assertions.assertFalse(weatherSun.isDayGoodForWalk());
+    Assertions.assertFalse(walkingValidator.isDayGoodForAction(weatherSun));
   }
 
   @Test
   void testIsDayGoodForWalkRain() {
-    Assertions.assertFalse(weatherRain.isDayGoodForWalk());
+    Assertions.assertFalse(walkingValidator.isDayGoodForAction(weatherRain));
   }
 
   @Test
   void testIsDayGoodForWalkCloud() {
-    Assertions.assertFalse(weatheCloud.isDayGoodForWalk());
+    Assertions.assertFalse(walkingValidator.isDayGoodForAction(weatheCloud));
   }
 
   @Test
   void testIsDayGoodForWalkCold() {
-    Assertions.assertFalse(weatheCold.isDayGoodForWalk());
+    Assertions.assertFalse(walkingValidator.isDayGoodForAction(weatheCold));
   }
 
   @Test
   void testIsDayGoodForWalkWarm() {
-    Assertions.assertFalse(weatheWarm.isDayGoodForWalk());
+    Assertions.assertFalse(walkingValidator.isDayGoodForAction(weatheWarm));
   }
 
   @Tag("DEV")
   @Test
   void testIsDayGoodForFishingSun() {
-    Assertions.assertTrue(weatherSun.isDayGoodForFishing());
+    Assertions.assertTrue(fishingValidator.isDayGoodForAction(weatherSun));
   }
 
   @Test
   void testIsDayGoodForFishingRain() {
-    Assertions.assertFalse(weatherRain.isDayGoodForFishing());
+    Assertions.assertFalse(fishingValidator.isDayGoodForAction(weatherRain));
   }
 
   @Test
   void testIsDayGoodForFishingCloud() {
-    Assertions.assertFalse(weatheCloud.isDayGoodForFishing());
+    Assertions.assertFalse(fishingValidator.isDayGoodForAction(weatheCloud));
   }
 
   @Test
   void testIsDayGoodForFishingCold() {
-    Assertions.assertFalse(weatheCold.isDayGoodForFishing());
+    Assertions.assertFalse(fishingValidator.isDayGoodForAction(weatheCold));
   }
 
   @Test
   void testIsDayGoodForFishingWarm() {
-    Assertions.assertFalse(weatheWarm.isDayGoodForFishing());
+    Assertions.assertFalse(fishingValidator.isDayGoodForAction(weatheWarm));
   }
 
   @Tag("DEV")
   @Test
   void testIsDayGoodForDrivingSun() {
-    Assertions.assertTrue(weatherSun.isDayGoodForDriving());
+    Assertions.assertTrue(drivingValidator.isDayGoodForAction(weatherSun));
   }
 
   @Test
   void testIsDayGoodForDrivingRain() {
-    Assertions.assertFalse(weatherRain.isDayGoodForDriving());
+    Assertions.assertFalse(drivingValidator.isDayGoodForAction(weatherRain));
   }
 
   @Test
   void testIsDayGoodForDrivingCloud() {
-    Assertions.assertFalse(weatheCloud.isDayGoodForDriving());
+    Assertions.assertFalse(drivingValidator.isDayGoodForAction(weatheCloud));
   }
 
   @Test
   void testIsDayGoodForDrivingCold() {
-    Assertions.assertFalse(weatheCold.isDayGoodForDriving());
+    Assertions.assertFalse(drivingValidator.isDayGoodForAction(weatheCold));
   }
 
   @Test
   void testIsDayGoodForDrivingWarm() {
-    Assertions.assertTrue(weatheWarm.isDayGoodForDriving());
+    Assertions.assertTrue(drivingValidator.isDayGoodForAction(weatheWarm));
   }
 
 
   @Tag("DEV")
   @Test
   void testIsValidSun() {
-    Assertions.assertTrue(weatherSun.isValid());
+    Assertions.assertTrue(weatherValidator.isValid(weatherSun));
   }
 
   @Test
   void testIsValidRain() {
-    Assertions.assertTrue(weatherRain.isValid());
+    Assertions.assertTrue(weatherValidator.isValid(weatherRain));
   }
 
   @Test
   void testIsValidCloud() {
-    Assertions.assertFalse(weatheCloud.isValid());
+    Assertions.assertFalse(weatherValidator.isValid(weatheCloud));
   }
 
   @Test
   void testIsValidCold() {
-    Assertions.assertTrue(weatheCold.isValid());
+    Assertions.assertTrue(weatherValidator.isValid(weatheCold));
   }
 
   @Test
   void testIsValidWarm() {
-    Assertions.assertFalse(weatheWarm.isValid());
+    Assertions.assertFalse(weatherValidator.isValid(weatheWarm));
   }
 
   @Tag("DEV")
   @Test
   void testGetDayRatingSun() {
-    Assertions.assertEquals(259, weatherSun.getDayRating(
+    Assertions.assertEquals(259, weatherDayRatingCalculator.getDayRating(weatherSun,
         0, 0, 5, 7, 10,
         false, false, false, 2));
   }
 
   @Test
   void testGetDayRatingRain() {
-    Assertions.assertEquals(-22, weatherRain.getDayRating(
+    Assertions.assertEquals(-22,  weatherDayRatingCalculator.getDayRating(weatherRain,
         0, -1, 1, -1, 10,
         false, false, false, 2));
   }
 
   @Test
   void testGetDayRatingClouds() {
-    Assertions.assertEquals(69, weatheCloud.getDayRating(
+    Assertions.assertEquals(69,  weatherDayRatingCalculator.getDayRating(weatheCloud,
         0, 0, 2, 1, 15,
         false, false, false, 2));
   }
 
   @Test
   void testGetDayRatingCold() {
-    Assertions.assertEquals(-46, weatheCold.getDayRating(
+    Assertions.assertEquals(-46,  weatherDayRatingCalculator.getDayRating(weatheCold,
         0, 0, 5, 5, -5,
         true, false, true, 2));
   }
 
   @Test
   void testGetDayRatingWarm() {
-    Assertions.assertEquals(44, weatheWarm.getDayRating(
+    Assertions.assertEquals(44,  weatherDayRatingCalculator.getDayRating(weatheWarm,
         0, 0, 0, 0, -4,
         false, false, false, 2));
   }

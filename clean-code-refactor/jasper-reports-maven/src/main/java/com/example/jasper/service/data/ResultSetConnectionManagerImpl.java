@@ -1,5 +1,6 @@
-package com.example.jasper.service;
+package com.example.jasper.service.data;
 
+import com.example.jasper.service.interfaces.ResultSetConnectionManager;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,7 +9,7 @@ import java.sql.Statement;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ResultSetConnectionManager {
+public class ResultSetConnectionManagerImpl implements ResultSetConnectionManager {
 
   // JDBC driver name and database URL
   static final String JDBC_DRIVER = "org.h2.Driver";
@@ -18,6 +19,7 @@ public class ResultSetConnectionManager {
   static final String USER = "sa";
   static final String PASS = "";
 
+  @Override
   public ResultSet getResultSet() {
     Connection conn = null;
     Statement stmt = null;

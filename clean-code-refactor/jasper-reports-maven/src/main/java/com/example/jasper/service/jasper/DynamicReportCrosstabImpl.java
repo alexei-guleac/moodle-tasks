@@ -1,4 +1,4 @@
-package com.example.jasper.service;
+package com.example.jasper.service.jasper;
 
 
 import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
@@ -6,6 +6,8 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.ctab;
 import static net.sf.dynamicreports.report.builder.DynamicReports.report;
 
 import com.example.jasper.model.Holiday;
+import com.example.jasper.service.interfaces.DataBeanListProvider;
+import com.example.jasper.service.interfaces.DynamicReportCrosstab;
 import com.example.jasper.util.Templates;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DynamicReportCrosstab {
+public class DynamicReportCrosstabImpl implements DynamicReportCrosstab {
 
   @Autowired
   private DataBeanListProvider dataBeanListProvider;
 
+  @Override
   public void build() {
     CrosstabRowGroupBuilder<String> rowGroup = ctab.rowGroup("country", String.class)
         .setTotalHeader("Total per month");
@@ -53,7 +56,6 @@ public class DynamicReportCrosstab {
     }
   }
 
-
   private JRDataSource createDataSource() {
 
     DRDataSource dataSource = new DRDataSource("country", "month", "count");
@@ -62,34 +64,52 @@ public class DynamicReportCrosstab {
 
     HashMap<String, HashMap<Integer, Integer>> countryHashMap = new HashMap<>();
 
+    fillEmptyData(dataBeanList, countryHashMap);
+    System.out.println(countryHashMap);
+
+    fillWithZeroData(dataBeanList, countryHashMap);
+    System.out.println(countryHashMap);
+
+    calculateHolydaysCountByDate(dataBeanList, countryHashMap);
+
+    addHolydaysAsDataSource(dataSource, countryHashMap);
+
+    return dataSource;
+  }
+
+  private void addHolydaysAsDataSource(DRDataSource dataSource,
+      HashMap<String, HashMap<Integer, Integer>> countryHashMap) {
+    countryHashMap.forEach((country, monthsValuesMap) -> {
+      monthsValuesMap.forEach((month, count) -> {
+        dataSource.add(country, month, count);
+      });
+    });
+  }
+
+  private void calculateHolydaysCountByDate(ArrayList<Holiday> dataBeanList,
+      HashMap<String, HashMap<Integer, Integer>> countryHashMap) {
+    for (Holiday holiday : dataBeanList) {
+      HashMap<Integer, Integer> monthsValuesMap = countryHashMap.get(holiday.getCountry());
+      int count = monthsValuesMap.getOrDefault(holiday.getDate().getMonthValue(), 0);
+      monthsValuesMap.put(holiday.getDate().getMonthValue(), count + 1);
+    }
+  }
+
+  private void fillEmptyData(ArrayList<Holiday> dataBeanList,
+      HashMap<String, HashMap<Integer, Integer>> countryHashMap) {
     for (Holiday holiday : dataBeanList) {
       countryHashMap.put(holiday.getCountry(), new HashMap<>());
     }
-    System.out.println(countryHashMap);
+  }
 
+  private void fillWithZeroData(ArrayList<Holiday> dataBeanList,
+      HashMap<String, HashMap<Integer, Integer>> countryHashMap) {
     for (Holiday holiday : dataBeanList) {
       HashMap<Integer, Integer> hashMap = countryHashMap.get(holiday.getCountry());
       for (int i = 1; i <= 12; i++) {
         hashMap.put(i, 0);
       }
     }
-    System.out.println(countryHashMap);
-
-    for (Holiday holiday : dataBeanList) {
-      HashMap<Integer, Integer> monthsValuesMap = countryHashMap.get(holiday.getCountry());
-//            System.out.println("load " + countryHashMap);
-
-      int count = monthsValuesMap.getOrDefault(holiday.getDate().getMonthValue(), 0);
-      monthsValuesMap.put(holiday.getDate().getMonthValue(), count + 1);
-    }
-
-    countryHashMap.forEach((country, monthsValuesMap) -> {
-      monthsValuesMap.forEach((month, count) -> {
-        dataSource.add(country, month, count);
-      });
-    });
-
-    return dataSource;
   }
 
 }
