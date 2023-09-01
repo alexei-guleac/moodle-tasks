@@ -1,13 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>net.example.springmvc</groupId>
   <artifactId>spring-mvc</artifactId>
   <packaging>war</packaging>
   <version>0.0.1-SNAPSHOT</version>
   <name>Hibernate-xmlconfig Maven Webapp</name>
   <url>http://maven.apache.org</url>
-<properties>
+
+	<properties>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<spring.version>5.1.0.RELEASE</spring.version>
 		<hibernate.version>5.3.5.Final</hibernate.version>
@@ -19,6 +21,7 @@
 		<jsp.version>2.3.1</jsp.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
 	</properties>
+
 	<dependencies>
 		<!-- Spring MVC Dependency -->
 		<dependency>
@@ -31,6 +34,20 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- Spring Security Config -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- Spring Security Web -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 
