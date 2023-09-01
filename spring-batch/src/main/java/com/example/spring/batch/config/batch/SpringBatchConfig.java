@@ -1,4 +1,4 @@
-package com.example.spring.batch.config;
+package com.example.spring.batch.config.batch;
 
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;

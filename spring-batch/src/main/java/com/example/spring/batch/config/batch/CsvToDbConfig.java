@@ -1,5 +1,6 @@
-package com.example.spring.batch.config;
+package com.example.spring.batch.config.batch;
 
+import com.example.spring.batch.config.batch.processor.CustomerProcessor;
 import com.example.spring.batch.entity.Customer;
 import com.example.spring.batch.repository.CustomerRepository;
 import lombok.AllArgsConstructor;

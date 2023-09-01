@@ -1,4 +1,4 @@
-package com.example.spring.batch.config;
+package com.example.spring.batch.config.batch;
 
 import com.example.spring.batch.entity.Customer;
 import javax.sql.DataSource;

@@ -1,6 +1,6 @@
-package com.example.spring.batch.config;
+package com.example.spring.batch.config.batch;
 
-import com.example.spring.batch.config.tasklet.MoveFilesTasklet;
+import com.example.spring.batch.config.batch.tasklet.MoveFilesTasklet;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
