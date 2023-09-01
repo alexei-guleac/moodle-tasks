@@ -22,3 +22,8 @@
 /vaadin-demo/.idea/
 /hibernate-xmlconfig/hibernate-xmlconfig.iml
 /spring-batch/.idea/
+/vaadin-demo/target/
+/vaadin-demo/vaadin-demo.iml
+/mybatis/.idea/
+/mybatis/target/
+/mybatis/mybatis-example.iml
