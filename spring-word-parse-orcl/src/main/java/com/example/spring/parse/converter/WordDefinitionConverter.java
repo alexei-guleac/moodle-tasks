@@ -19,6 +19,19 @@ public class WordDefinitionConverter implements Converter<WordDefinition, WordDe
 
     String commaSeparator = ",";
 
+    String synonyms = source.getSynonyms();
+    if (synonyms == null) {
+      synonyms = "";
+    }
+    String antonyms = source.getAntonyms();
+    if (antonyms == null) {
+      antonyms = "";
+    }
+    String relatives = source.getRelatives();
+    if (relatives == null) {
+      relatives = "";
+    }
+
     return WordDefinitionData.builder()
         .active(source.getActive())
         .created_at(source.getCreated_at().format(dateTimeFormatter))
@@ -27,9 +40,9 @@ public class WordDefinitionConverter implements Converter<WordDefinition, WordDe
         .definition(source.getDefinition())
         .predefinition(source.getPredefinition())
         .name(source.getName())
-        .synonyms(new HashSet<>(Arrays.asList(source.getSynonyms().split(commaSeparator))))
-        .antonyms(new HashSet<>(Arrays.asList(source.getAntonyms().split(commaSeparator))))
-        .relatives(new HashSet<>(Arrays.asList(source.getRelatives().split(commaSeparator))))
+        .synonyms(new HashSet<>(Arrays.asList(synonyms.split(commaSeparator))))
+        .antonyms(new HashSet<>(Arrays.asList(antonyms.split(commaSeparator))))
+        .relatives(new HashSet<>(Arrays.asList(relatives.split(commaSeparator))))
         .build();
   }
 }
