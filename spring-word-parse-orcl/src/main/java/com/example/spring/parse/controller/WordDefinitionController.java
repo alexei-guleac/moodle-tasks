@@ -3,8 +3,9 @@ package com.example.spring.parse.controller;
 
 import com.example.spring.parse.data.FindWordDefinitionData;
 import com.example.spring.parse.data.GetWordDefinitionData;
-import com.example.spring.parse.service.HtmlParser;
+import com.example.spring.parse.service.parser.HtmlParser;
 import com.example.spring.parse.service.WordDefinitionService;
+import com.example.spring.parse.service.parser.WordParser;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class WordDefinitionController {
   @Autowired
   private HtmlParser htmlParser;
 
+  @Autowired
+  private WordParser wordParser;
+
 
   @PostMapping("/findWordDefinition")
   public List<FindWordDefinitionData> findWordDefinition(
@@ -32,9 +36,15 @@ public class WordDefinitionController {
     return definitionService.getByNameContainingIgnoreCase(getWordDefinitionData.getWord());
   }
 
+  @PostMapping("/uploadHtmlWordDefinition")
+  public void uploadHtmlWordDefinition(
+      @RequestParam("file") MultipartFile file) throws IOException {
+     htmlParser.parseHtml(file);
+  }
+
   @PostMapping("/uploadWordDefinition")
   public void uploadWordDefinition(
       @RequestParam("file") MultipartFile file) throws IOException {
-     htmlParser.parseHtmlToJson(file);
+    wordParser.parseWord(file);
   }
 }

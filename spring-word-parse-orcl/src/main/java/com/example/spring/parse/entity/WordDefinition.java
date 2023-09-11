@@ -35,10 +35,10 @@ public class WordDefinition {
   @Column(name = "dictionary_id")
   private Integer dictionary_id;
 
-  @Column(name = "name")
+  @Column(columnDefinition="VARCHAR2(2048 CHAR)", length = 2048, name = "name")
   private String name;
 
-  @Column(name = "predefinition")
+  @Column(columnDefinition="VARCHAR2(2048 CHAR)", length = 2048, name = "predefinition")
   private String predefinition;
 
 //  @ElementCollection
@@ -46,7 +46,7 @@ public class WordDefinition {
 //  @CollectionTable(name="definitions")
 //  private List<String> definition;
 
-  @Column(columnDefinition="VARCHAR2(2048 CHAR)", length = 2048, name="definition")
+  @Column(columnDefinition="VARCHAR2(4096 CHAR)", length = 4096, name="definition")
   private String definition;
 
   @Column(name = "active")
@@ -61,7 +61,7 @@ public class WordDefinition {
   @Column(name = "antonyms")
   private String antonyms;
 
-  @Column(name = "relatives")
+  @Column(columnDefinition="VARCHAR2(2048 CHAR)", length = 2048, name = "relatives")
   private String relatives;
 
 }

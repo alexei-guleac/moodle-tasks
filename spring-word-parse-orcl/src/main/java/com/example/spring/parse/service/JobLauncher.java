@@ -1,5 +1,6 @@
 package com.example.spring.parse.service;
 
+import com.example.spring.parse.service.parser.ResourceHtmlParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
