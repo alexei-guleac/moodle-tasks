@@ -31,3 +31,6 @@
 /spring-word-parse/target/
 /spring-word-parse-orcl/.idea/
 /spring-word-parse-orcl/target/
+/libra/node_modules/
+/libra/.idea/
+/libra/target/

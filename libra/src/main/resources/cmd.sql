@@ -1,0 +1,1 @@
+truncate table sys."flyway_schema_history";
