@@ -54,6 +54,61 @@ public class RegistrationView extends VerticalLayout {
     H2 logo = new H2("Add new user");
     logo.addClassName("welcome");
 
+    setupFields();
+
+    VerticalLayout verticalLayout = getVerticalLayoutForFileds(logo);
+
+    setupParentLayout(verticalLayout);
+
+    binder.bindInstanceFields(this);
+    binder.setBean(user);
+    // Configure and style components
+    setSpacing(true);
+
+    addActionsForButtons();
+
+    getElement().appendChild(verticalLayout.getElement());
+  }
+
+  private void addActionsForButtons() {
+
+    name.addKeyPressListener(Key.ENTER, e -> save());
+    telephone.addKeyPressListener(Key.ENTER, e -> save());
+    email.addKeyPressListener(Key.ENTER, e -> save());
+    password.addValueChangeListener(this::setPasswordValue);
+
+    reg.addClickListener(e -> save());
+  }
+
+  private VerticalLayout getVerticalLayoutForFileds(H2 logo) {
+
+    VerticalLayout verticalLayout = new VerticalLayout(logo, name, email, login, password,
+        telephone, comboBox, reg);
+    verticalLayout.setSizeFull();
+    verticalLayout.setSpacing(true);
+    verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+    verticalLayout.setAlignItems((Alignment.CENTER));
+    verticalLayout.setAlignSelf(Alignment.CENTER);
+    verticalLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+    verticalLayout.setHorizontalComponentAlignment(Alignment.CENTER);
+
+    return verticalLayout;
+  }
+
+  private void setupParentLayout(VerticalLayout verticalLayout) {
+
+    setSizeFull();
+    setSpacing(true);
+    setJustifyContentMode(JustifyContentMode.CENTER);
+    setAlignItems((Alignment.CENTER));
+    setAlignSelf(Alignment.CENTER);
+    setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+    setHorizontalComponentAlignment(Alignment.CENTER);
+
+    add(verticalLayout);
+  }
+
+  private void setupFields() {
     name.setRequired(true);
     name.setWidthFull();
     name.setMaxWidth("350px");
@@ -99,39 +154,6 @@ public class RegistrationView extends VerticalLayout {
     reg.setWidthFull();
     reg.setMaxWidth("250px");
     reg.setMinWidth("100px");
-
-    VerticalLayout verticalLayout = new VerticalLayout(logo, name, email, login, password,
-        telephone, comboBox, reg);
-    verticalLayout.setSizeFull();
-    verticalLayout.setSpacing(true);
-    verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-    verticalLayout.setAlignItems((Alignment.CENTER));
-    verticalLayout.setAlignSelf(Alignment.CENTER);
-    verticalLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-    verticalLayout.setHorizontalComponentAlignment(Alignment.CENTER);
-
-    setSizeFull();
-    setSpacing(true);
-    setJustifyContentMode(JustifyContentMode.CENTER);
-    setAlignItems((Alignment.CENTER));
-    setAlignSelf(Alignment.CENTER);
-    setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-    setHorizontalComponentAlignment(Alignment.CENTER);
-    add(verticalLayout);
-
-    binder.bindInstanceFields(this);
-    binder.setBean(user);
-    // Configure and style components
-    setSpacing(true);
-
-    name.addKeyPressListener(Key.ENTER, e -> save());
-    telephone.addKeyPressListener(Key.ENTER, e -> save());
-    email.addKeyPressListener(Key.ENTER, e -> save());
-    password.addValueChangeListener(this::setPasswordValue);
-
-    reg.addClickListener(e -> save());
-
-    getElement().appendChild(verticalLayout.getElement());
   }
 
   void save() {

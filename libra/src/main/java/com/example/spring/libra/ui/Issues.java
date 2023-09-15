@@ -57,18 +57,7 @@ public class Issues extends VerticalLayout {
             ui.navigate("/users"))
     );
 
-    H1 logo = new H1("Libra");
-    logo.addClassName("logo");
-    VerticalLayout header;
-    if (securityService.getAuthenticatedUser() != null) {
-      Button logout = new Button("Logout", click ->
-          securityService.logout());
-      header = new VerticalLayout(logo, logout);
-    } else {
-      header = new VerticalLayout(logo);
-    }
-    header.setSizeFull();
-    header.setAlignItems((Alignment.CENTER));
+    VerticalLayout header = getVerticalLayoutHeader(securityService);
 
     // build layout
     HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, goToUsers);
@@ -82,11 +71,9 @@ public class Issues extends VerticalLayout {
     spacing.setAlignItems(Alignment.CENTER);
 
     add(header, spacing, actions, grid, editor);
-    grid.setHeight("300px");
-    grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
-        "description", "creationDate");
-    grid.getColumnByKey("id").setWidth("60px").
-        setFlexGrow(0);
+
+    setupGrid();
+
     filter.setPlaceholder("Filter by description");
 
     // Hook logic to components
@@ -96,7 +83,6 @@ public class Issues extends VerticalLayout {
     filter.addValueChangeListener
         (e -> listUsers(e.getValue()));
 
-    grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
         /* Connect selected Customer to editor or hide if none
             is selected */
@@ -108,9 +94,7 @@ public class Issues extends VerticalLayout {
         Customer the new button is clicked
          */
 
-    addNewBtn.addClickListener(e -> editor.editIssue
-        (new Issue(null, new Pos(), new IssueTypes(), 0, "", new Statuses(), "", new User(),
-            new User(), "", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "")));
+    addNewButton(editor);
 
     // Listen changes made by the editor,
     // refresh data from backend
@@ -121,6 +105,39 @@ public class Issues extends VerticalLayout {
 
     // Initialize listing
     listUsers(null);
+  }
+
+  private void addNewButton(IssueEditor editor) {
+    addNewBtn.addClickListener(e -> editor.editIssue
+        (new Issue(null, new Pos(), new IssueTypes(), 0, "", new Statuses(), "", new User(),
+            new User(), "", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "")));
+  }
+
+  private void setupGrid() {
+    grid.setHeight("300px");
+    grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
+        "description", "creationDate");
+    grid.getColumnByKey("id").setWidth("60px").
+        setFlexGrow(0);
+    grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+  }
+
+  private VerticalLayout getVerticalLayoutHeader(@Autowired SecurityService securityService) {
+
+    H1 logo = new H1("Libra");
+    logo.addClassName("logo");
+    VerticalLayout header;
+    if (securityService.getAuthenticatedUser() != null) {
+      Button logout = new Button("Logout", click ->
+          securityService.logout());
+      header = new VerticalLayout(logo, logout);
+    } else {
+      header = new VerticalLayout(logo);
+    }
+    header.setSizeFull();
+    header.setAlignItems((Alignment.CENTER));
+
+    return header;
   }
 
   void listUsers(String filterText) {

@@ -62,6 +62,39 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     this.repository = repository;
     this.userTypesRepository = userTypesRepository;
 
+    setupFields(userTypesRepository);
+
+    VerticalLayout spacing = new VerticalLayout(name, email, login, password, telephone, comboBox,
+        actions);
+    spacing.setSpacing(true);
+    spacing.setAlignItems(Alignment.CENTER);
+
+    add(spacing);
+    // bind using naming convention
+    binder.bindInstanceFields(this);
+    // Configure and style components
+    setSpacing(true);
+
+    password.addValueChangeListener(this::setPasswordValue);
+
+    addActionButtons();
+
+    setVisible(false);
+  }
+
+  private void addActionButtons() {
+
+    addKeyPressListener(Key.ENTER, e -> save());
+    // wire action buttons to save, delete and reset
+    save.getElement().getThemeList().add("primary");
+    save.addClickListener(e -> save());
+    delete.getElement().getThemeList().add("error");
+    delete.addClickListener(e -> delete());
+    cancel.addClickListener(e -> editUser(user));
+
+  }
+
+  private void setupFields(UserTypesRepository userTypesRepository) {
     name.setRequired(true);
     name.setWidthFull();
     name.setMaxWidth("350px");
@@ -102,29 +135,6 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     comboBox.setItems(userTypesRepository.findAll());
     comboBox.setItemLabelGenerator(userTypes -> userTypes.getUserType().name());
     comboBox.addValueChangeListener(this::setType);
-
-    VerticalLayout spacing = new VerticalLayout(name, email, login, password, telephone, comboBox,
-        actions);
-    spacing.setSpacing(true);
-    spacing.setAlignItems(Alignment.CENTER);
-
-    add(spacing);
-    // bind using naming convention
-    binder.bindInstanceFields(this);
-    // Configure and style components
-    setSpacing(true);
-
-    password.addValueChangeListener(this::setPasswordValue);
-
-    addKeyPressListener(Key.ENTER, e -> save());
-    // wire action buttons to save, delete and reset
-    save.getElement().getThemeList().add("primary");
-    save.addClickListener(e -> save());
-    delete.getElement().getThemeList().add("error");
-    delete.addClickListener(e -> delete());
-    cancel.addClickListener(e -> editUser(user));
-
-    setVisible(false);
   }
 
   private void setPasswordValue(ComponentValueChangeEvent<TextField, String> listener) {

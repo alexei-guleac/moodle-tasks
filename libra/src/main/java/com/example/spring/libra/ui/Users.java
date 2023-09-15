@@ -53,18 +53,7 @@ public class Users extends VerticalLayout {
     );
 
     // Logo text
-    H1 logo = new H1("Libra");
-    logo.addClassName("logo");
-    VerticalLayout header;
-    if (securityService.getAuthenticatedUser() != null) {
-      Button logout = new Button("Logout", click ->
-          securityService.logout());
-      header = new VerticalLayout(logo, logout);
-    } else {
-      header = new VerticalLayout(logo);
-    }
-    header.setSizeFull();
-    header.setAlignItems((Alignment.CENTER));
+    VerticalLayout header = getVerticalLayoutForHeader(securityService);
 
     // build layout
     HorizontalLayout actions = new HorizontalLayout(filterEmail, addNewBtn, goToIssues);
@@ -78,10 +67,9 @@ public class Users extends VerticalLayout {
     spacing.setAlignItems(Alignment.CENTER);
 
     add(header, spacing, actions, grid, editor);
-    grid.setHeight("300px");
-    grid.setColumns("id", "name", "login", "email", "telephone");
-    grid.getColumnByKey("id").setWidth("60px").
-        setFlexGrow(0);
+
+    setupGrid();
+
     filterEmail.setPlaceholder("Filter by email");
 
     // Hook logic to components
@@ -91,7 +79,6 @@ public class Users extends VerticalLayout {
     filterEmail.addValueChangeListener
         (e -> listUsers(e.getValue()));
 
-    grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
         /* Connect selected Customer to editor or hide if none
             is selected */
@@ -103,8 +90,7 @@ public class Users extends VerticalLayout {
         Customer the new button is clicked
          */
 
-    addNewBtn.addClickListener(e -> editor.editUser
-        (new User(null, "", "", "", "", "", "", new UserTypes())));
+    addNewButton(editor);
 
     // Listen changes made by the editor,
     // refresh data from backend
@@ -115,6 +101,37 @@ public class Users extends VerticalLayout {
 
     // Initialize listing
     listUsers(null);
+  }
+
+  private void addNewButton(UserEditor editor) {
+    addNewBtn.addClickListener(e -> editor.editUser
+        (new User(null, "", "", "", "", "", "", new UserTypes())));
+  }
+
+  private void setupGrid() {
+    grid.setHeight("300px");
+    grid.setColumns("id", "name", "login", "email", "telephone");
+    grid.getColumnByKey("id").setWidth("60px").
+        setFlexGrow(0);
+    grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+  }
+
+  private VerticalLayout getVerticalLayoutForHeader(@Autowired SecurityService securityService) {
+
+    H1 logo = new H1("Libra");
+    logo.addClassName("logo");
+    VerticalLayout header;
+    if (securityService.getAuthenticatedUser() != null) {
+      Button logout = new Button("Logout", click ->
+          securityService.logout());
+      header = new VerticalLayout(logo, logout);
+    } else {
+      header = new VerticalLayout(logo);
+    }
+    header.setSizeFull();
+    header.setAlignItems((Alignment.CENTER));
+
+    return header;
   }
 
   void listUsers(String filterText) {

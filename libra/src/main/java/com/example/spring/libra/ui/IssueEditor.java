@@ -85,6 +85,43 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     this.statusesRepository = statusesRepository;
     this.userRepository = userRepository;
 
+    setupFields(issueTypesRepository, posRepository, statusesRepository, userRepository);
+
+    VerticalLayout spacing = new VerticalLayout(problemId, priority, memo, description,
+        assignedDateTimePicker, solution, posIdComboBox, issueTypesComboBox, statusesComboBox,
+        userAssignedComboBox, actions);
+    spacing.setSpacing(true);
+    spacing.setAlignItems(Alignment.CENTER);
+
+    add(spacing);
+    // bind using naming convention
+    binder.forField(problemId)
+        .withConverter(new StringToIntegerConverter("must be integer"))
+        .bind(Issue::getProblemId, Issue::setProblemId);
+
+    binder.bindInstanceFields(this);
+    // Configure and style components
+    setSpacing(true);
+
+    addActionsForButtons();
+
+    setVisible(false);
+  }
+
+  private void addActionsForButtons() {
+
+    addKeyPressListener(Key.ENTER, e -> save());
+    // wire action buttons to save, delete and reset
+    save.getElement().getThemeList().add("primary");
+    save.addClickListener(e -> save());
+    delete.getElement().getThemeList().add("error");
+    delete.addClickListener(e -> delete());
+    cancel.addClickListener(e -> editIssue(issues));
+
+  }
+
+  private void setupFields(IssueTypesRepository issueTypesRepository, PosRepository posRepository,
+      StatusesRepository statusesRepository, UserRepository userRepository) {
     problemId.setRequired(true);
     problemId.setWidthFull();
     problemId.setMaxWidth("350px");
@@ -157,32 +194,6 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     userAssignedComboBox.setItems(all3);
     userAssignedComboBox.setItemLabelGenerator(user -> user.getId().toString());
     userAssignedComboBox.addValueChangeListener(this::setAssignedUser);
-
-    VerticalLayout spacing = new VerticalLayout(problemId, priority, memo, description,
-        assignedDateTimePicker, solution, posIdComboBox, issueTypesComboBox, statusesComboBox,
-        userAssignedComboBox, actions);
-    spacing.setSpacing(true);
-    spacing.setAlignItems(Alignment.CENTER);
-
-    add(spacing);
-    // bind using naming convention
-    binder.forField(problemId)
-        .withConverter(new StringToIntegerConverter("must be integer"))
-        .bind(Issue::getProblemId, Issue::setProblemId);
-
-    binder.bindInstanceFields(this);
-    // Configure and style components
-    setSpacing(true);
-
-    addKeyPressListener(Key.ENTER, e -> save());
-    // wire action buttons to save, delete and reset
-    save.getElement().getThemeList().add("primary");
-    save.addClickListener(e -> save());
-    delete.getElement().getThemeList().add("error");
-    delete.addClickListener(e -> delete());
-    cancel.addClickListener(e -> editIssue(issues));
-
-    setVisible(false);
   }
 
   private void setAssignedDate(
