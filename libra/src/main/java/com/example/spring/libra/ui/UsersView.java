@@ -1,12 +1,9 @@
 package com.example.spring.libra.ui;
 
 import com.example.spring.libra.config.security.SecurityService;
-import com.example.spring.libra.model.entity.Issue;
-import com.example.spring.libra.model.entity.IssueTypes;
-import com.example.spring.libra.model.entity.Pos;
-import com.example.spring.libra.model.entity.Statuses;
 import com.example.spring.libra.model.entity.User;
-import com.example.spring.libra.repository.IssueRepository;
+import com.example.spring.libra.model.entity.UserTypes;
+import com.example.spring.libra.repository.UserRepository;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -19,51 +16,52 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-@Route(value = "/issues")
-public class Issues extends VerticalLayout {
+@Route(value = "/users")
+public class UsersView extends VerticalLayout {
 
-  final Grid<Issue> grid;
+  final Grid<User> grid;
 
-  final TextField filter;
+  final TextField filterEmail;
 
-  private final IssueRepository repo;
+  private final UserRepository repo;
 
   private final Button addNewBtn;
 
-  private final Button goToUsers;
+  private final Button goToIssues;
 
-  private final IssueEditor editor;
+  private final UserEditor editor;
 
   private final SecurityService securityService;
 
-  public Issues(IssueRepository repo, IssueEditor editor,
+  public UsersView(UserRepository repo, UserEditor editor,
       @Autowired SecurityService securityService) {
     this.securityService = securityService;
     this.repo = repo;
     this.editor = editor;
-    this.grid = new Grid<>(Issue.class);
+    this.grid = new Grid<>(User.class);
 
-    this.filter = new TextField();
-    this.addNewBtn = new Button("Add Issue", VaadinIcon.PLUS.create());
+    this.filterEmail = new TextField();
+    this.addNewBtn = new Button("Add User", VaadinIcon.PLUS.create());
     addNewBtn.addThemeVariants
         (ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
-    this.goToUsers = new Button("Go To Users");
-    goToUsers.addClickListener(e ->
-        goToUsers.getUI().ifPresent(ui ->
-            ui.navigate("/users"))
+
+    this.goToIssues = new Button("Go To Issues");
+    goToIssues.addClickListener(e ->
+        goToIssues.getUI().ifPresent(ui ->
+            ui.navigate("/issues"))
     );
 
-    VerticalLayout header = getVerticalLayoutHeader(securityService);
+    // Logo text
+    VerticalLayout header = getVerticalLayoutForHeader(securityService);
 
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, goToUsers);
+    HorizontalLayout actions = new HorizontalLayout(filterEmail, addNewBtn, goToIssues);
 
     Text space = new Text("       ");
-    Text text = new Text("Issue management");
+    Text text = new Text("User management");
 
     VerticalLayout spacing = new VerticalLayout(space, text);
     spacing.setSpacing(true);
@@ -74,20 +72,20 @@ public class Issues extends VerticalLayout {
 
     setupGrid();
 
-    filter.setPlaceholder("Filter by description");
+    filterEmail.setPlaceholder("Filter by email");
 
     // Hook logic to components
         /* Replace listing with filtered content when user
           changes filter*/
-    filter.setValueChangeMode(ValueChangeMode.EAGER);
-    filter.addValueChangeListener
+    filterEmail.setValueChangeMode(ValueChangeMode.EAGER);
+    filterEmail.addValueChangeListener
         (e -> listUsers(e.getValue()));
 
 
         /* Connect selected Customer to editor or hide if none
             is selected */
     grid.asSingleSelect().addValueChangeListener(e -> {
-      editor.editIssue(e.getValue());
+      editor.editUser(e.getValue());
     });
 
         /* Instantiate and edit new
@@ -100,29 +98,27 @@ public class Issues extends VerticalLayout {
     // refresh data from backend
     editor.setChangeHandler(() -> {
       editor.setVisible(false);
-      listUsers(filter.getValue());
+      listUsers(filterEmail.getValue());
     });
 
     // Initialize listing
     listUsers(null);
   }
 
-  private void addNewButton(IssueEditor editor) {
-    addNewBtn.addClickListener(e -> editor.editIssue
-        (new Issue(null, new Pos(), new IssueTypes(), 0, "", new Statuses(), "", new User(),
-            new User(), "", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "")));
+  private void addNewButton(UserEditor editor) {
+    addNewBtn.addClickListener(e -> editor.editUser
+        (new User(null, "", "", "", "", "", "", new UserTypes())));
   }
 
   private void setupGrid() {
     grid.setHeight("300px");
-    grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
-        "description", "creationDate");
+    grid.setColumns("id", "name", "login", "email", "telephone");
     grid.getColumnByKey("id").setWidth("60px").
         setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
   }
 
-  private VerticalLayout getVerticalLayoutHeader(@Autowired SecurityService securityService) {
+  private VerticalLayout getVerticalLayoutForHeader(@Autowired SecurityService securityService) {
 
     H1 logo = new H1("Libra");
     logo.addClassName("logo");
@@ -145,7 +141,7 @@ public class Issues extends VerticalLayout {
       grid.setItems(repo.findAll());
     } else {
       grid.setItems(repo.
-          findByDescriptionStartsWithIgnoreCase(filterText));
+          findByEmailStartsWithIgnoreCase(filterText));
     }
   }
 }

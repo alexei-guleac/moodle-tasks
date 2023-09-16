@@ -29,6 +29,10 @@ public class City {
   @Column(name = "city_name")
   private String cityName;
 
+  public City withId(Long id) {
+    this.id = id;
+    return this;
+  }
 }
 
 

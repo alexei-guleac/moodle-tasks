@@ -65,8 +65,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   Button cancel = new Button("Cancel", VaadinIcon.ESC.create());
   Button delete = new Button
       ("Delete", VaadinIcon.TRASH.create());
-  HorizontalLayout actions = new HorizontalLayout
-      (save, cancel, delete);
+  HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
   Binder<Issue> binder = new Binder<>(Issue.class);
 
@@ -288,7 +287,6 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   }
 
   public interface ChangeHandler {
-
     void onChange();
   }
 }
