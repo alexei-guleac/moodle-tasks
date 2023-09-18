@@ -33,6 +33,16 @@ public class City {
     this.id = id;
     return this;
   }
+
+  public City withName(String cityName) {
+    this.cityName = cityName;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return id + ", " + cityName;
+  }
 }
 
 

@@ -2,6 +2,7 @@ package com.example.spring.libra.ui;
 
 import com.example.spring.libra.config.security.SecurityService;
 import com.example.spring.libra.model.entity.City;
+import com.example.spring.libra.model.entity.ConnectionTypes;
 import com.example.spring.libra.model.entity.Pos;
 import com.example.spring.libra.repository.PosRepository;
 import com.vaadin.flow.component.Text;
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -114,12 +116,15 @@ public class PosView extends VerticalLayout {
 
   private void addNewButton(PosEditor editor) {
     addNewBtn.addClickListener(e -> editor.editPosition(
-        (new Pos())));
+        (new Pos(null, "", "", "", "", new City(), "", "",
+            new ConnectionTypes(),
+            false, false, false, false, 0,
+            LocalDateTime.now()))));
   }
 
   private void addNewCityButton(CityEditor editor) {
     addNewCityBtn.addClickListener(e -> editor.editCity(
-        (new City())));
+        (new City(null, ""))));
   }
 
   private void setupGrid() {

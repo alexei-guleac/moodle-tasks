@@ -22,7 +22,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
   private final CityRepository repository;
 
   /* Fields to edit properties in User entity */
-  TextField name = new TextField("Name");
+  TextField cityName = new TextField("Name");
 
   /* Action buttons */
   Button save = new Button
@@ -45,7 +45,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
 
     setupFields();
 
-    VerticalLayout spacing = new VerticalLayout(name, actions);
+    VerticalLayout spacing = new VerticalLayout(cityName, actions);
     spacing.setSpacing(true);
     spacing.setAlignItems(Alignment.CENTER);
 
@@ -74,11 +74,11 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
 
   private void setupFields() {
 
-    name.setRequired(true);
-    name.setWidthFull();
-    name.setMaxWidth("350px");
-    name.setMinWidth("100px");
-    name.setClearButtonVisible(true);
+    cityName.setRequired(true);
+    cityName.setWidthFull();
+    cityName.setMaxWidth("350px");
+    cityName.setMinWidth("100px");
+    cityName.setClearButtonVisible(true);
 
   }
 
@@ -114,7 +114,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
     setVisible(true);
 
     // Focus first name initially
-    name.focus();
+    cityName.focus();
   }
 
   public void setChangeHandler(ChangeHandler h) {

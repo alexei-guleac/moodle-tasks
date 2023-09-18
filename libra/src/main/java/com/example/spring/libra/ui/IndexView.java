@@ -9,6 +9,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "/")
 public class IndexView extends VerticalLayout {
 
+  Button positions = new Button("Go to Positions");
   Button issues = new Button("Go to Issues");
   Button users = new Button("Go to Users");
 
@@ -21,7 +22,7 @@ public class IndexView extends VerticalLayout {
 
     setButtons();
 
-    verticalLayout.add(header, issues, users);
+    verticalLayout.add(header, positions, issues, users);
     verticalLayout.setAlignItems((Alignment.CENTER));
 
     getElement().appendChild(verticalLayout.getElement());
@@ -40,6 +41,10 @@ public class IndexView extends VerticalLayout {
   }
 
   private void setButtons() {
+    positions.setWidthFull();
+    positions.setMaxWidth("500px");
+    positions.setMinWidth("100px");
+
     issues.setWidthFull();
     issues.setMaxWidth("500px");
     issues.setMinWidth("100px");
@@ -47,6 +52,11 @@ public class IndexView extends VerticalLayout {
     users.setWidthFull();
     users.setMaxWidth("500px");
     users.setMinWidth("100px");
+
+    positions.addClickListener(e ->
+        positions.getUI().ifPresent(ui ->
+            ui.navigate("positions"))
+    );
 
     issues.addClickListener(e ->
         issues.getUI().ifPresent(ui ->

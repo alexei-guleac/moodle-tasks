@@ -42,7 +42,7 @@ public class Pos {
   @Column(name = "address")
   private String address;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "city_id")
   private City cityId;
 
@@ -52,7 +52,7 @@ public class Pos {
   @Column(name = "brand")
   private String brand;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "connection_type_id")
   private ConnectionTypes connectionTypeId;
 

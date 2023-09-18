@@ -18,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import java.time.LocalDateTime;
@@ -82,7 +83,7 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
     VerticalLayout spacing = new VerticalLayout(posName, telephone, cellPhone, address,
         model, brand, cityComboBox, connectionTypesComboBox,
-        morningOpening, morningClosing, afternoonOpening, afternoonClosing, actions);
+        morningOpening, morningClosing, afternoonOpening, afternoonClosing, daysClosed, actions);
     spacing.setSpacing(true);
     spacing.setAlignItems(Alignment.CENTER);
 
@@ -91,6 +92,13 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     binder.forField(daysClosed)
         .withConverter(new StringToIntegerConverter("must be integer"))
         .bind(Pos::getDaysClosed, Pos::setDaysClosed);
+
+    binder.forField(telephone)
+        .withValidator(new RegexpValidator("Only 1-9 allowed","\\d*"))
+        .bind(Pos::getTelephone, Pos::setTelephone);
+    binder.forField(cellPhone)
+        .withValidator(new RegexpValidator("Only 1-9 allowed","\\d*"))
+        .bind(Pos::getCellPhone, Pos::setCellPhone);
 
     binder.bindInstanceFields(this);
     // Configure and style components
@@ -150,6 +158,12 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     brand.setMinWidth("100px");
     brand.setClearButtonVisible(true);
 
+    daysClosed.setRequired(true);
+    daysClosed.setWidthFull();
+    daysClosed.setMaxWidth("350px");
+    daysClosed.setMinWidth("100px");
+    daysClosed.setClearButtonVisible(true);
+
     cityComboBox.setWidthFull();
     cityComboBox.setRequired(true);
     cityComboBox.setMaxWidth("350px");
@@ -207,7 +221,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
       // Find fresh entity for editing
       pos = repository.findById(position.getId()).get();
 
-      cityComboBox.setValue(new City().withId(pos.getCityId().getId()));
+      cityComboBox.setValue(new City()
+          .withId(pos.getCityId().getId())
+          .withName(pos.getCityId().getCityName()));
 
       connectionTypesComboBox.setValue(new ConnectionTypes()
           .withId(pos.getConnectionTypeId().getId())

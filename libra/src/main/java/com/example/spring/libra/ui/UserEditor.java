@@ -1,5 +1,6 @@
 package com.example.spring.libra.ui;
 
+import com.example.spring.libra.model.entity.Pos;
 import com.example.spring.libra.model.entity.User;
 import com.example.spring.libra.model.entity.UserTypes;
 import com.example.spring.libra.repository.UserRepository;
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,11 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     spacing.setAlignItems(Alignment.CENTER);
 
     add(spacing);
+
+    binder.forField(telephone)
+        .withValidator(new RegexpValidator("Only 1-9 allowed","\\d*"))
+        .bind(User::getTelephone, User::setTelephone);
+
     // bind using naming convention
     binder.bindInstanceFields(this);
     // Configure and style components
