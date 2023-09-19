@@ -194,7 +194,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     setVisible(true);
 
     // Focus first name initially
-    name.focus();
+    login.focus();
   }
 
   public void setChangeHandler(ChangeHandler h) {

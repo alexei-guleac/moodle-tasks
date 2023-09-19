@@ -242,7 +242,7 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     setVisible(true);
 
     // Focus first name initially
-    posName.focus();
+    model.focus();
   }
 
   public void setChangeHandler(ChangeHandler h) {

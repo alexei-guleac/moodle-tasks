@@ -122,7 +122,7 @@ public class IssuesView extends VerticalLayout {
   }
 
   private void setupGrid() {
-    grid.setHeight("300px");
+    grid.setHeight("680px");
     grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
         "description", "creationDate");
     grid.getColumnByKey("id").setWidth("60px").

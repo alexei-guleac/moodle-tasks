@@ -277,7 +277,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     setVisible(true);
 
     // Focus first name initially
-    priority.focus();
+    description.focus();
   }
 
   public void setChangeHandler(ChangeHandler h) {

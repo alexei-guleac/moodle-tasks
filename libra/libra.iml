@@ -89,6 +89,8 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.oracle.database.security:osdt_core:21.3.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.oracle.database.ha:simplefan:21.3.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.oracle.database.ha:ons:21.3.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.3.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.checkerframework:checker-qual:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: com.h2database:h2:2.1.214" level="project" />
     <orderEntry type="library" name="Maven: org.flywaydb:flyway-core:8.0.5" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.24" level="project" />

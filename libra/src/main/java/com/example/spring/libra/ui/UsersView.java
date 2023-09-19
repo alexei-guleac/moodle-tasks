@@ -111,7 +111,7 @@ public class UsersView extends VerticalLayout {
   }
 
   private void setupGrid() {
-    grid.setHeight("300px");
+    grid.setHeight("680px");
     grid.setColumns("id", "name", "login", "email", "telephone");
     grid.getColumnByKey("id").setWidth("60px").
         setFlexGrow(0);

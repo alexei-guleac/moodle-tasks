@@ -128,7 +128,7 @@ public class PosView extends VerticalLayout {
   }
 
   private void setupGrid() {
-    grid.setHeight("300px");
+    grid.setHeight("680px");
     grid.setColumns("id", "posName", "telephone", "cityId", "model", "brand",
         "daysClosed", "insertDate");
     grid.getColumnByKey("id").setWidth("60px").
