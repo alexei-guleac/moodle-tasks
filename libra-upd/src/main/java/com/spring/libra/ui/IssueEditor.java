@@ -196,11 +196,11 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   }
 
   private void setAssignedDate(
-      ComponentValueChangeEvent<DateTimePicker, LocalDateTime> dateTimePickerLocalDateTimeComponentValueChangeEvent) {
+      ComponentValueChangeEvent<DateTimePicker, LocalDateTime> changeEvent) {
     System.out.println(
-        "DATE " + dateTimePickerLocalDateTimeComponentValueChangeEvent.getValue());
+        "DATE " + changeEvent.getValue());
     this.issues
-        .setAssignedDate(dateTimePickerLocalDateTimeComponentValueChangeEvent.getValue());
+        .setAssignedDate(changeEvent.getValue());
   }
 
   private void setIssueType(
@@ -287,6 +287,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   }
 
   public interface ChangeHandler {
+
     void onChange();
   }
 }

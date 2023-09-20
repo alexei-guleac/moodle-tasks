@@ -21,11 +21,12 @@ import com.vaadin.flow.router.Route;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.vaadin.klaudeta.PaginatedGrid;
 
 @Route(value = "/positions")
 public class PosView extends VerticalLayout {
 
-  final Grid<Pos> grid;
+  final PaginatedGrid<Pos> grid;
 
   final TextField filter;
 
@@ -49,7 +50,7 @@ public class PosView extends VerticalLayout {
     this.securityService = securityService;
     this.repo = repo;
     this.editor = editor;
-    this.grid = new Grid<>(Pos.class);
+    this.grid = new PaginatedGrid<>(Pos.class);
 
     this.filter = new TextField();
     this.addNewBtn = new Button("Add Position", VaadinIcon.PLUS.create());
@@ -129,12 +130,17 @@ public class PosView extends VerticalLayout {
   }
 
   private void setupGrid() {
-    grid.setHeight("680px");
+    grid.setHeight("500px");
     grid.setColumns("id", "posName", "telephone", "cityId", "model", "brand",
         "daysClosed", "insertDate");
     grid.getColumnByKey("id").setWidth("60px").
         setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+    
+    // Sets the max number of items to be rendered on the grid for each page
+    grid.setPageSize(10);
+    // Sets how many pages should be visible on the pagination before and/or after the current selected page
+    grid.setPaginatorSize(5);
   }
 
   private VerticalLayout getVerticalLayoutHeader(@Autowired SecurityService securityService) {

@@ -19,11 +19,12 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.vaadin.klaudeta.PaginatedGrid;
 
 @Route(value = "/users")
 public class UsersView extends VerticalLayout {
 
-  final Grid<User> grid;
+  final PaginatedGrid<User> grid;
 
   final TextField filterEmail;
 
@@ -42,7 +43,7 @@ public class UsersView extends VerticalLayout {
     this.securityService = securityService;
     this.repo = repo;
     this.editor = editor;
-    this.grid = new Grid<>(User.class);
+    this.grid = new PaginatedGrid<>(User.class);
 
     this.filterEmail = new TextField();
     this.addNewBtn = new Button("Add User", VaadinIcon.PLUS.create());
@@ -112,11 +113,16 @@ public class UsersView extends VerticalLayout {
   }
 
   private void setupGrid() {
-    grid.setHeight("680px");
+    grid.setHeight("500px");
     grid.setColumns("id", "name", "login", "email", "telephone");
     grid.getColumnByKey("id").setWidth("60px").
         setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
+    // Sets the max number of items to be rendered on the grid for each page
+    grid.setPageSize(10);
+    // Sets how many pages should be visible on the pagination before and/or after the current selected page
+    grid.setPaginatorSize(5);
   }
 
   private VerticalLayout getVerticalLayoutForHeader(@Autowired SecurityService securityService) {
