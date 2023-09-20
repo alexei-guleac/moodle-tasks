@@ -205,22 +205,34 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
   private void setIssueType(
       AbstractField.ComponentValueChangeEvent<ComboBox<IssueTypes>, IssueTypes> listener) {
-    this.issues.setIssueTypeId(new IssueTypes().withId(listener.getValue().getId()));
+    IssueTypes value = listener.getValue();
+    if (value != null) {
+      this.issues.setIssueTypeId(new IssueTypes().withId(value.getId()));
+    }
   }
 
   private void setPos(
       AbstractField.ComponentValueChangeEvent<ComboBox<Pos>, Pos> listener) {
-    this.issues.setPosId(new Pos().withId(listener.getValue().getId()));
+    Pos value = listener.getValue();
+    if (value != null) {
+      this.issues.setPosId(new Pos().withId(value.getId()));
+    }
   }
 
   private void setStatusType(
       AbstractField.ComponentValueChangeEvent<ComboBox<Statuses>, Statuses> listener) {
-    this.issues.setStatusId(new Statuses().withId(listener.getValue().getId()));
+    Statuses value = listener.getValue();
+    if (value != null) {
+      this.issues.setStatusId(new Statuses().withId(value.getId()));
+    }
   }
 
   private void setAssignedUser(
       AbstractField.ComponentValueChangeEvent<ComboBox<User>, User> listener) {
-    this.issues.setAssignedId(new User().withId(listener.getValue().getId()));
+    User value = listener.getValue();
+    if (value != null) {
+      this.issues.setAssignedId(new User().withId(value.getId()));
+    }
   }
 
   void delete() {
@@ -266,6 +278,11 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
     } else {
       issues = issue;
+
+      posIdComboBox.setValue(null);
+      issueTypesComboBox.setValue(null);
+      statusesComboBox.setValue(null);
+      userAssignedComboBox.setValue(null);
     }
     cancel.setVisible(persisted);
         /* Bind user properties to similarly named fields

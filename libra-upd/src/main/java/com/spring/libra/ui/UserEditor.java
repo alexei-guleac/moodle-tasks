@@ -1,6 +1,5 @@
 package com.spring.libra.ui;
 
-import com.spring.libra.model.entity.Pos;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
 import com.spring.libra.repository.UserRepository;
@@ -73,7 +72,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     add(spacing);
 
     binder.forField(telephone)
-        .withValidator(new RegexpValidator("Only 1-9 allowed","\\d*"))
+        .withValidator(new RegexpValidator("Only 1-9 allowed", "\\d*"))
         .bind(User::getTelephone, User::setTelephone);
 
     // bind using naming convention
@@ -151,10 +150,13 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
   private void setType(
       AbstractField.ComponentValueChangeEvent<ComboBox<UserTypes>, UserTypes> listener) {
-    System.out.println(
-        "TYPE " + userTypesRepository.findByUserType(listener.getValue().getUserType()).get());
-    this.user
-        .setUserTypeId(userTypesRepository.findByUserType(listener.getValue().getUserType()).get());
+    UserTypes value = listener.getValue();
+    if (value != null) {
+      System.out.println(
+          "TYPE " + userTypesRepository.findByUserType(value.getUserType()).get());
+      this.user
+          .setUserTypeId(userTypesRepository.findByUserType(value.getUserType()).get());
+    }
   }
 
   void delete() {
@@ -183,6 +185,8 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
     } else {
       user = usr;
+
+      comboBox.setValue(null);
     }
     cancel.setVisible(persisted);
         /* Bind user properties to similarly named fields
@@ -204,6 +208,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   }
 
   public interface ChangeHandler {
+
     void onChange();
   }
 }

@@ -94,10 +94,10 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
         .bind(Pos::getDaysClosed, Pos::setDaysClosed);
 
     binder.forField(telephone)
-        .withValidator(new RegexpValidator("Only 1-9 allowed","\\d*"))
+        .withValidator(new RegexpValidator("Only 1-9 allowed", "\\d*"))
         .bind(Pos::getTelephone, Pos::setTelephone);
     binder.forField(cellPhone)
-        .withValidator(new RegexpValidator("Only 1-9 allowed","\\d*"))
+        .withValidator(new RegexpValidator("Only 1-9 allowed", "\\d*"))
         .bind(Pos::getCellPhone, Pos::setCellPhone);
 
     binder.bindInstanceFields(this);
@@ -186,12 +186,18 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
   private void setConnectionType(
       ComponentValueChangeEvent<ComboBox<ConnectionTypes>, ConnectionTypes> listener) {
-    this.pos.setConnectionTypeId(new ConnectionTypes().withId(listener.getValue().getId()));
+    ConnectionTypes value = listener.getValue();
+    if (value != null) {
+      this.pos.setConnectionTypeId(new ConnectionTypes().withId(value.getId()));
+    }
   }
 
   private void setCity(
       ComponentValueChangeEvent<ComboBox<City>, City> listener) {
-    this.pos.setCityId(new City().withId(listener.getValue().getId()));
+    City value = listener.getValue();
+    if (value != null) {
+      this.pos.setCityId(new City().withId(value.getId()));
+    }
   }
 
   void delete() {
@@ -231,6 +237,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
     } else {
       pos = position;
+
+      cityComboBox.setValue(null);
+      connectionTypesComboBox.setValue(null);
     }
     cancel.setVisible(persisted);
         /* Bind user properties to similarly named fields
