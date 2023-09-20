@@ -12,6 +12,7 @@ import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -110,13 +111,27 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
   }
 
   private void addActionsForButtons() {
+    
+    ConfirmDialog saveDialog = new ConfirmDialog();
+    saveDialog.setHeader("Save");
+    saveDialog.setText("Do you want to save your changes?");
+    saveDialog.setCancelable(true);
+    saveDialog.setConfirmText("Save");
+    saveDialog.addConfirmListener(e -> save());
 
-    addKeyPressListener(Key.ENTER, e -> save());
+    ConfirmDialog deleteDialog = new ConfirmDialog();
+    deleteDialog.setHeader("Delete");
+    deleteDialog.setText("Do you want to delete entity?");
+    deleteDialog.setCancelable(true);
+    deleteDialog.setConfirmText("Delete");
+    deleteDialog.addConfirmListener(e -> delete());
+
+    addKeyPressListener(Key.ENTER, e -> saveDialog.open());
     // wire action buttons to save, delete and reset
     save.getElement().getThemeList().add("primary");
-    save.addClickListener(e -> save());
+    save.addClickListener(e -> saveDialog.open());
     delete.getElement().getThemeList().add("error");
-    delete.addClickListener(e -> delete());
+    delete.addClickListener(e -> deleteDialog.open());
     cancel.addClickListener(e -> editPosition(pos));
 
   }
