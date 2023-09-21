@@ -1,12 +1,15 @@
 package com.spring.libra.ui;
 
+import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.Issue;
 import com.spring.libra.model.entity.IssueTypes;
+import com.spring.libra.model.entity.Notification;
 import com.spring.libra.model.entity.Pos;
 import com.spring.libra.model.entity.Statuses;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.repository.IssueRepository;
 import com.spring.libra.repository.IssueTypesRepository;
+import com.spring.libra.repository.NotificationRepository;
 import com.spring.libra.repository.PosRepository;
 import com.spring.libra.repository.StatusesRepository;
 import com.spring.libra.repository.UserRepository;
@@ -29,6 +32,7 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
 @SpringComponent
@@ -43,7 +47,11 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
   private final StatusesRepository statusesRepository;
 
+  private final NotificationRepository notificationRepository;
+
   private final UserRepository userRepository;
+
+  private final SecurityService securityService;
 
   /* Fields to edit properties in User entity */
   TextField problemId = new TextField("ProblemId");
@@ -78,12 +86,16 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   public IssueEditor(IssueRepository repository, IssueTypesRepository issueTypesRepository,
       PosRepository posRepository,
       StatusesRepository statusesRepository,
-      UserRepository userRepository) {
+      NotificationRepository notificationRepository,
+      UserRepository userRepository,
+      SecurityService securityService) {
     this.repository = repository;
     this.issueTypesRepository = issueTypesRepository;
     this.posRepository = posRepository;
     this.statusesRepository = statusesRepository;
+    this.notificationRepository = notificationRepository;
     this.userRepository = userRepository;
+    this.securityService = securityService;
 
     setupFields(issueTypesRepository, posRepository, statusesRepository, userRepository);
 
@@ -264,8 +276,26 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
     System.out.println("FOR SAVE " + issues.toString());
 
-    issues.setUserCreatedId(new User().withId(1L));
-    repository.saveAndFlush(issues);
+    Notification notification = Notification.builder()
+        .priority("normal")
+        .assignedId(issues.getAssignedId())
+        .description("You have new issue related to position " + issues.getPosId().getId())
+        .assignedDate(issues.getAssignedDate())
+        .creationDate(issues.getCreationDate())
+        .build();
+
+    if (securityService.getAuthenticatedUser() != null) {
+      User user = userRepository.findByLogin(securityService.getAuthenticatedUser().getUsername())
+          .orElseThrow(() -> new UsernameNotFoundException(
+              "User Not Found with username: " + securityService.getAuthenticatedUser()
+                  .getUsername()));
+      issues.setUserCreatedId(new User().withId(user.getId()));
+      notification.setUserCreatedId(new User().withId(user.getId()));
+    }
+
+    Issue issue = repository.saveAndFlush(issues);
+    notification.setIssueId(issue);
+    notificationRepository.saveAndFlush(notification);
 
     changeHandler.onChange();
   }

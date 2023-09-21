@@ -42,6 +42,11 @@ public class Statuses {
     this.status = status;
     return this;
   }
+
+  @Override
+  public String toString() {
+    return status + "";
+  }
 }
 
 
