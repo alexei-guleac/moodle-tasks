@@ -1,5 +1,7 @@
 package com.spring.libra.ui.view;
 
+import static com.spring.libra.constants.DateTime.CUSTOM_FORMATTER;
+
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.City;
 import com.spring.libra.model.entity.ConnectionTypes;
@@ -7,16 +9,18 @@ import com.spring.libra.model.entity.Pos;
 import com.spring.libra.repository.PosRepository;
 import com.spring.libra.ui.editor.CityEditor;
 import com.spring.libra.ui.editor.PosEditor;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -112,9 +116,7 @@ public class PositionsView extends VerticalLayout {
 
         /* Connect selected Customer to editor or hide if none
             is selected */
-    grid.asSingleSelect().addValueChangeListener(e -> {
-      editor.editPosition(e.getValue());
-    });
+    grid.asSingleSelect().addValueChangeListener(showDetails());
 
         /* Instantiate and edit new
         Customer the new button is clicked
@@ -133,6 +135,34 @@ public class PositionsView extends VerticalLayout {
 
     // Initialize listing
     listPositions(null);
+  }
+
+  private ValueChangeListener<ComponentValueChangeEvent<Grid<Pos>, Pos>> showDetails() {
+    return selection -> {
+      Optional<Pos> optionalPos = Optional.ofNullable(selection.getValue());
+      if (optionalPos.isPresent()) {
+        Dialog dialog = new Dialog();
+        final Pos pos = optionalPos.get();
+
+        dialog.add(new H4("Position id # "), new Text(pos.getId().toString()));
+        dialog.add(new H4("Name: "), new Text(pos.getPosName()));
+        dialog.add(new H4("Telephone: "), new Text(pos.getTelephone()));
+        dialog.add(new H4("Cellphone: "), new Text(pos.getCellPhone()));
+        dialog.add(new H4("Address: "), new Text(pos.getAddress()));
+        dialog.add(new H4("City: "), new Text(pos.getCityId().toString()));
+        dialog.add(new H4("Model: "), new Text(pos.getModel()));
+        dialog.add(new H4("Brand: "), new Text(pos.getBrand()));
+        dialog.add(new H4("Connection type: "),
+            new Text(pos.getConnectionTypeId().getConnectionType().name()));
+        dialog.add(new H4("Days closed: "), new Text(pos.getDaysClosed().toString()));
+        dialog.add(new H4("Insert date: "), new Text(pos.getInsertDate().format(CUSTOM_FORMATTER)));
+
+        dialog.setWidthFull();
+        dialog.setMinWidth("200px");
+        dialog.setMaxWidth("500px");
+        dialog.open();
+      }
+    };
   }
 
   private void addNewButton(PosEditor editor) {
@@ -156,6 +186,13 @@ public class PositionsView extends VerticalLayout {
     grid.getColumnByKey("telephone").setAutoWidth(true).setFlexGrow(0);
     grid.getColumnByKey("daysClosed").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
+    grid.addComponentColumn(t -> {
+      Button editButton = new Button("Edit");
+      editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+      editButton.addClickListener(click -> editor.editPosition(t));
+      return editButton;
+    });
 
     // Sets the max number of items to be rendered on the grid for each page
     grid.setPageSize(10);

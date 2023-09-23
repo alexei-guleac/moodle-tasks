@@ -1,16 +1,23 @@
 package com.spring.libra.ui.view;
 
+import static com.spring.libra.constants.DateTime.CUSTOM_FORMATTER;
+
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.Notification;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.repository.NotificationRepository;
 import com.spring.libra.repository.UserRepository;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -18,6 +25,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
@@ -81,10 +89,35 @@ public class MyNotificationsView extends VerticalLayout {
     filter.addValueChangeListener
         (e -> listUserIssues(e.getValue()));
 
+    grid.asSingleSelect().addValueChangeListener(showDetails());
+
     // Initialize listing
     listUserIssues(null);
   }
 
+  private ValueChangeListener<ComponentValueChangeEvent<Grid<Notification>, Notification>> showDetails() {
+    return selection -> {
+      Optional<Notification> notificationOptional = Optional.ofNullable(selection.getValue());
+      if (notificationOptional.isPresent()) {
+        Dialog dialog = new Dialog();
+        final Notification notification = notificationOptional.get();
+
+        dialog.add(new H4("Notification id # "), new Text(notification.getId().toString()));
+        dialog.add(new H4("Issue: "), new Text(notification.getIssueId().toString()));
+        dialog.add(new H4("Priority: "), new Text(notification.getPriority()));
+        dialog.add(new H4("User created: "), new Text(notification.getUserCreatedId().toString()));
+        dialog.add(new H4("User assigned: "), new Text(notification.getAssignedId().toString()));
+        dialog.add(new H4("Description: "), new Text(notification.getDescription()));
+        dialog.add(new H4("Assign date: "), new Text(notification.getAssignedDate().format(CUSTOM_FORMATTER)));
+        dialog.add(new H4("Creation date: "), new Text(notification.getCreationDate().format(CUSTOM_FORMATTER)));
+
+        dialog.setWidthFull();
+        dialog.setMinWidth("200px");
+        dialog.setMaxWidth("500px");
+        dialog.open();
+      }
+    };
+  }
 
   private void setupGrid() {
     grid.setHeight("500px");

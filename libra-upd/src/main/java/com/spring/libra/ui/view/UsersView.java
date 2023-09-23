@@ -5,13 +5,18 @@ import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
 import com.spring.libra.repository.UserRepository;
 import com.spring.libra.ui.editor.UserEditor;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -20,6 +25,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
@@ -98,9 +104,7 @@ public class UsersView extends VerticalLayout {
 
         /* Connect selected Customer to editor or hide if none
             is selected */
-    grid.asSingleSelect().addValueChangeListener(e -> {
-      editor.editUser(e.getValue());
-    });
+    grid.asSingleSelect().addValueChangeListener(showDetails());
 
         /* Instantiate and edit new
         Customer the new button is clicked
@@ -119,6 +123,28 @@ public class UsersView extends VerticalLayout {
     listUsers(null);
   }
 
+  private ValueChangeListener<ComponentValueChangeEvent<Grid<User>, User>> showDetails() {
+    return selection -> {
+      Optional<User> userOptional = Optional.ofNullable(selection.getValue());
+      if (userOptional.isPresent()) {
+        Dialog dialog = new Dialog();
+        final User user = userOptional.get();
+
+        dialog.add(new H4("User id # "), new Text(user.getId().toString()));
+        dialog.add(new H4("Name: "), new Text(user.getName()));
+        dialog.add(new H4("Email: "), new Text(user.getEmail()));
+        dialog.add(new H4("Telephone: "), new Text(user.getTelephone()));
+        dialog.add(new H4("Login: "), new Text(user.getLogin()));
+        dialog.add(new H4("User type id: "), new Text(user.getUserTypeId().toString()));
+
+        dialog.setWidthFull();
+        dialog.setMinWidth("200px");
+        dialog.setMaxWidth("500px");
+        dialog.open();
+      }
+    };
+  }
+
   private void addNewButton(UserEditor editor) {
     addNewBtn.addClickListener(e -> editor.editUser
         (new User(null, "", "", "", "", "", "", new UserTypes())));
@@ -131,6 +157,13 @@ public class UsersView extends VerticalLayout {
     grid.getColumnByKey("login").setAutoWidth(true).setFlexGrow(0);
     grid.getColumnByKey("telephone").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
+    grid.addComponentColumn(t -> {
+      Button editButton = new Button("Edit");
+      editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+      editButton.addClickListener(click -> editor.editUser(t));
+      return editButton;
+    });
 
     // Sets the max number of items to be rendered on the grid for each page
     grid.setPageSize(10);

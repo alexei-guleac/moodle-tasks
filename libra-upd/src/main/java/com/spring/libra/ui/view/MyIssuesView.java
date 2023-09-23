@@ -1,5 +1,7 @@
 package com.spring.libra.ui.view;
 
+import static com.spring.libra.ui.view.IssuesView.showDetails;
+
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.Issue;
 import com.spring.libra.model.entity.User;
@@ -81,10 +83,11 @@ public class MyIssuesView extends VerticalLayout {
     filter.addValueChangeListener
         (e -> listUserIssues(e.getValue()));
 
+    grid.asSingleSelect().addValueChangeListener(showDetails());
+
     // Initialize listing
     listUserIssues(null);
   }
-
 
   private void setupGrid() {
     grid.setHeight("500px");

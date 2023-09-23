@@ -74,25 +74,6 @@ public class Issue {
   @Column(name = "solution")
   private String solution;
 
-//  @Override
-//  public String toString() {
-//    return "Issue{" +
-//        "id=" + id +
-//        ", posId=" + posId +
-//        ", issueTypeId=" + issueTypeId +
-//        ", problemId=" + problemId +
-//        ", priority='" + priority + '\'' +
-//        ", statusId=" + statusId +
-//        ", memo='" + memo + '\'' +
-//        ", userCreatedId=" + userCreatedId +
-//        ", assignedId=" + assignedId +
-//        ", description='" + description + '\'' +
-//        ", assignedDate=" + assignedDate +
-//        ", creationDate=" + creationDate +
-//        ", modifDate=" + modifDate +
-//        ", solution='" + solution + '\'' +
-//        '}';
-//  }
 
   @Override
   public String toString() {

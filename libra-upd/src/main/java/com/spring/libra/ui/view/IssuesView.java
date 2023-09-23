@@ -1,5 +1,7 @@
 package com.spring.libra.ui.view;
 
+import static com.spring.libra.constants.DateTime.CUSTOM_FORMATTER;
+
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.Issue;
 import com.spring.libra.model.entity.IssueTypes;
@@ -8,13 +10,18 @@ import com.spring.libra.model.entity.Statuses;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.repository.IssueRepository;
 import com.spring.libra.ui.editor.IssueEditor;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -24,6 +31,7 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
@@ -108,9 +116,7 @@ public class IssuesView extends VerticalLayout {
 
         /* Connect selected Customer to editor or hide if none
             is selected */
-    grid.asSingleSelect().addValueChangeListener(e -> {
-      editor.editIssue(e.getValue());
-    });
+    grid.asSingleSelect().addValueChangeListener(showDetails());
 
         /* Instantiate and edit new
         Customer the new button is clicked
@@ -129,6 +135,37 @@ public class IssuesView extends VerticalLayout {
     listIssues(null);
   }
 
+  static ValueChangeListener<ComponentValueChangeEvent<Grid<Issue>, Issue>> showDetails() {
+    return selection -> {
+      Optional<Issue> issueOptional = Optional.ofNullable(selection.getValue());
+      if (issueOptional.isPresent()) {
+        Dialog dialog = new Dialog();
+        final Issue issue = issueOptional.get();
+
+        dialog.add(new H4("Issue id # "), new Text(issue.getId().toString()));
+        dialog.add(new H4("Position id: "), new Text(issue.getPosId().toString()));
+        dialog.add(new H4("Issue type: "), new Text(issue.getIssueTypeId().toString()));
+        dialog.add(new H4("Problem id: "), new Text(issue.getProblemId().toString()));
+        dialog.add(new H4("Priority "), new Text(issue.getPriority()));
+        dialog.add(new H4("Status: "), new Text(issue.getStatusId().toString()));
+        dialog.add(new H4("Memo: "), new Text(issue.getMemo()));
+        dialog.add(new H4("User created: "), new Text(issue.getUserCreatedId().toString()));
+        dialog.add(new H4("User assigned: "), new Text(issue.getAssignedId().toString()));
+        dialog.add(new H4("Description: "), new Text(issue.getDescription()));
+        dialog.add(new H4("Assign date: "),
+            new Text(issue.getAssignedDate().format(CUSTOM_FORMATTER)));
+        dialog.add(new H4("Creation date: "),
+            new Text(issue.getCreationDate().format(CUSTOM_FORMATTER)));
+        dialog.add(new H4("Solution: "), new Text(issue.getSolution()));
+
+        dialog.setWidthFull();
+        dialog.setMinWidth("200px");
+        dialog.setMaxWidth("500px");
+        dialog.open();
+      }
+    };
+  }
+
   private void addNewButton(IssueEditor editor) {
     addNewBtn.addClickListener(e -> editor.editIssue
         (new Issue(null, new Pos(), new IssueTypes(), 0, "", new Statuses(), "", new User(),
@@ -143,6 +180,13 @@ public class IssuesView extends VerticalLayout {
     grid.getColumnByKey("problemId").setAutoWidth(true).setFlexGrow(0);
     grid.getColumnByKey("priority").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
+    grid.addComponentColumn(t -> {
+      Button editButton = new Button("Edit");
+      editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+      editButton.addClickListener(click -> editor.editIssue(t));
+      return editButton;
+    });
 
     // Sets the max number of items to be rendered on the grid for each page
     grid.setPageSize(10);
