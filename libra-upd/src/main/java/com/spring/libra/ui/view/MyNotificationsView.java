@@ -1,8 +1,11 @@
 package com.spring.libra.ui.view;
 
 import static com.spring.libra.constants.DateTime.CUSTOM_FORMATTER;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_GRID_HEIGHT;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_INDEX_MAX_WIDTH;
 
 import com.spring.libra.config.security.SecurityService;
+import com.spring.libra.constants.Routes;
 import com.spring.libra.model.entity.Notification;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.repository.NotificationRepository;
@@ -31,7 +34,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-@Route(value = "/mynotifications")
+@Route(value = Routes.MY_NOTIFICATIONS)
 public class MyNotificationsView extends VerticalLayout {
 
   final PaginatedGrid<Notification> grid;
@@ -113,14 +116,14 @@ public class MyNotificationsView extends VerticalLayout {
 
         dialog.setWidthFull();
         dialog.setMinWidth("200px");
-        dialog.setMaxWidth("500px");
+        dialog.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
         dialog.open();
       }
     };
   }
 
   private void setupGrid() {
-    grid.setHeight("500px");
+    grid.setHeight(DEFAULT_GRID_HEIGHT);
     grid.setColumns("id", "issueId", "priority", "userCreatedId",
         "description", "creationDate");
     grid.getColumnByKey("id").setAutoWidth(true).setFlexGrow(0).setFrozen(true);
@@ -141,16 +144,17 @@ public class MyNotificationsView extends VerticalLayout {
     if (securityService.getAuthenticatedUser() != null) {
 
       ConfirmDialog dialog = new ConfirmDialog();
-      dialog.setHeader("Logout");
+      final String logout = "Logout";
+      dialog.setHeader(logout);
       dialog.setText("Do you want to log out from the system now?");
       dialog.setCancelable(true);
 
-      dialog.setConfirmText("Logout");
+      dialog.setConfirmText(logout);
       dialog.addConfirmListener(event -> securityService.logout());
 
-      Button logout = new Button("Logout", click ->
+      Button button = new Button(logout, click ->
           dialog.open());
-      VerticalLayout verticalLayout = new VerticalLayout(logout);
+      VerticalLayout verticalLayout = new VerticalLayout(button);
       verticalLayout.setJustifyContentMode(JustifyContentMode.END);
       verticalLayout.setAlignItems((Alignment.END));
       verticalLayout.setAlignSelf(Alignment.END);

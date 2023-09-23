@@ -1,5 +1,9 @@
 package com.spring.libra.ui.editor;
 
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
+import static com.spring.libra.constants.Notifications.DEFAULT_SHOW_TIME;
+
 import com.spring.libra.model.entity.City;
 import com.spring.libra.repository.CityRepository;
 import com.vaadin.flow.component.Key;
@@ -29,11 +33,9 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
   TextField cityName = new TextField("Name");
 
   /* Action buttons */
-  Button save = new Button
-      ("Save", VaadinIcon.CHECK.create());
+  Button save = new Button("Save", VaadinIcon.CHECK.create());
   Button cancel = new Button("Cancel", VaadinIcon.ESC.create());
-  Button delete = new Button
-      ("Delete", VaadinIcon.TRASH.create());
+  Button delete = new Button("Delete", VaadinIcon.TRASH.create());
   HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
   Binder<City> binder = new Binder<>(City.class);
@@ -44,7 +46,6 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
 
   @Autowired
   public CityEditor(CityRepository repository) {
-
     this.repository = repository;
 
     setupFields();
@@ -67,7 +68,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
   private void addActionButtons() {
 
     ConfirmDialog saveDialog = new ConfirmDialog();
-    saveDialog.setHeader("Save");
+        saveDialog.setHeader("Save city");
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -75,7 +76,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
-    deleteDialog.setHeader("Delete");
+    deleteDialog.setHeader("Delete city");
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
@@ -96,16 +97,17 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
 
     cityName.setRequired(true);
     cityName.setWidthFull();
-    cityName.setMaxWidth("350px");
-    cityName.setMinWidth("100px");
+    cityName.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    cityName.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     cityName.setClearButtonVisible(true);
-
   }
 
   void delete() {
     repository.delete(city);
 
-    Notification notify = Notification.show("City deleted", 3000, Position.BOTTOM_END);
+    Notification notify = Notification
+        .show("City with id # " + city.getId() + " deleted", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
     changeHandler.onChange();
@@ -114,7 +116,9 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
   void save() {
     repository.save(city);
 
-    Notification notify = Notification.show("City saved", 3000, Position.BOTTOM_END);
+    Notification notify = Notification
+        .show("City with name " + city.getCityName() + " saved", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
     changeHandler.onChange();

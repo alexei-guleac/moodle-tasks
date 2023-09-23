@@ -1,5 +1,9 @@
 package com.spring.libra.ui.editor;
 
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
+import static com.spring.libra.constants.Notifications.DEFAULT_SHOW_TIME;
+
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.Issue;
 import com.spring.libra.model.entity.IssueTypes;
@@ -61,7 +65,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   TextField memo = new TextField("Memo");
   TextField description = new TextField("Description");
 
-  DateTimePicker assignedDateTimePicker = new DateTimePicker();
+  DateTimePicker assignedDate = new DateTimePicker();
 
   TextField solution = new TextField("Solution");
 
@@ -71,11 +75,9 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   ComboBox<User> userAssignedComboBox = new ComboBox<>("UserAssigned");
 
   /* Action buttons */
-  Button save = new Button
-      ("Save", VaadinIcon.CHECK.create());
+  Button save = new Button("Save", VaadinIcon.CHECK.create());
   Button cancel = new Button("Cancel", VaadinIcon.ESC.create());
-  Button delete = new Button
-      ("Delete", VaadinIcon.TRASH.create());
+  Button delete = new Button("Delete", VaadinIcon.TRASH.create());
   HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
   Binder<Issue> binder = new Binder<>(Issue.class);
@@ -102,7 +104,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     setupFields(issueTypesRepository, posRepository, statusesRepository, userRepository);
 
     VerticalLayout spacing = new VerticalLayout(problemId, priority, memo, description,
-        assignedDateTimePicker, solution, posIdComboBox, issueTypesComboBox, statusesComboBox,
+        assignedDate, solution, posIdComboBox, issueTypesComboBox, statusesComboBox,
         userAssignedComboBox, actions);
     spacing.setSpacing(true);
     spacing.setAlignItems(Alignment.CENTER);
@@ -125,7 +127,9 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   private void addActionsForButtons() {
 
     ConfirmDialog saveDialog = new ConfirmDialog();
-    saveDialog.setHeader("Save");
+
+    saveDialog.setHeader("Save issue");
+
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -133,7 +137,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
-    deleteDialog.setHeader("Delete");
+    deleteDialog.setHeader("Delete issue");
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
@@ -154,82 +158,76 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
       StatusesRepository statusesRepository, UserRepository userRepository) {
     problemId.setRequired(true);
     problemId.setWidthFull();
-    problemId.setMaxWidth("350px");
-    problemId.setMinWidth("100px");
+    problemId.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    problemId.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
 
     priority.setRequired(true);
     priority.setWidthFull();
-    priority.setMaxWidth("350px");
-    priority.setMinWidth("100px");
+    priority.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    priority.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     priority.setClearButtonVisible(true);
 
     memo.setWidthFull();
-    memo.setMaxWidth("350px");
-    memo.setMinWidth("100px");
+    memo.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    memo.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     memo.setClearButtonVisible(true);
 
     description.setRequired(true);
     description.setWidthFull();
-    description.setMaxWidth("350px");
-    description.setMinWidth("100px");
+    description.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    description.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     description.setClearButtonVisible(true);
 
-    assignedDateTimePicker.setWidthFull();
-    assignedDateTimePicker.setMaxWidth("350px");
-    assignedDateTimePicker.setMinWidth("100px");
-    assignedDateTimePicker.setLabel("Assigned date and time");
-    assignedDateTimePicker.addValueChangeListener(this::setAssignedDate);
+    assignedDate.setWidthFull();
+    assignedDate.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    assignedDate.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    assignedDate.setLabel("Assigned date and time");
+    assignedDate.addValueChangeListener(this::setAssignedDate);
 
     solution.setWidthFull();
-    solution.setMaxWidth("350px");
-    solution.setMinWidth("100px");
+    solution.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    solution.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     solution.setClearButtonVisible(true);
 
     posIdComboBox.setWidthFull();
     posIdComboBox.setRequired(true);
-    posIdComboBox.setMaxWidth("350px");
-    posIdComboBox.setMinWidth("100px");
-    List<Pos> all = posRepository.findAll();
-    System.out.println("POS " + all);
-    posIdComboBox.setItems(all);
+    posIdComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    posIdComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    List<Pos> posList = posRepository.findAll();
+    posIdComboBox.setItems(posList);
     posIdComboBox.setItemLabelGenerator(pos -> pos.getId().toString());
     posIdComboBox.addValueChangeListener(this::setPos);
 
     issueTypesComboBox.setWidthFull();
     issueTypesComboBox.setRequired(true);
-    issueTypesComboBox.setMaxWidth("350px");
-    issueTypesComboBox.setMinWidth("100px");
-    List<IssueTypes> all1 = issueTypesRepository.findAll();
-    System.out.println("issueTypesComboBox " + all1);
-    issueTypesComboBox.setItems(all1);
+    issueTypesComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    issueTypesComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    List<IssueTypes> issueTypesList = issueTypesRepository.findAll();
+    issueTypesComboBox.setItems(issueTypesList);
     issueTypesComboBox.setItemLabelGenerator(issueTypes -> issueTypes.getIssueTypeName().name());
     issueTypesComboBox.addValueChangeListener(this::setIssueType);
 
     statusesComboBox.setWidthFull();
     statusesComboBox.setRequired(true);
-    statusesComboBox.setMaxWidth("350px");
-    statusesComboBox.setMinWidth("100px");
-    List<Statuses> all2 = statusesRepository.findAll();
-    System.out.println("all2 " + all2);
-    statusesComboBox.setItems(all2);
+    statusesComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    statusesComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    List<Statuses> statusesList = statusesRepository.findAll();
+    statusesComboBox.setItems(statusesList);
     statusesComboBox.setItemLabelGenerator(statuses -> statuses.getStatus().name());
     statusesComboBox.addValueChangeListener(this::setStatusType);
 
     userAssignedComboBox.setWidthFull();
     userAssignedComboBox.setRequired(true);
-    userAssignedComboBox.setMaxWidth("350px");
-    userAssignedComboBox.setMinWidth("100px");
-    List<User> all3 = userRepository.findAll();
-    System.out.println("all3 " + all3);
-    userAssignedComboBox.setItems(all3);
+    userAssignedComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    userAssignedComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    List<User> userList = userRepository.findAll();
+    userAssignedComboBox.setItems(userList);
     userAssignedComboBox.setItemLabelGenerator(user -> user.getId().toString());
     userAssignedComboBox.addValueChangeListener(this::setAssignedUser);
   }
 
   private void setAssignedDate(
       ComponentValueChangeEvent<DateTimePicker, LocalDateTime> changeEvent) {
-    System.out.println(
-        "DATE " + changeEvent.getValue());
     this.issues
         .setAssignedDate(changeEvent.getValue());
   }
@@ -270,7 +268,8 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     repository.delete(issues);
 
     com.vaadin.flow.component.notification.Notification notify = com.vaadin.flow.component.notification.Notification
-        .show("Issue deleted", 3000, Position.BOTTOM_END);
+        .show("Issue with id # " + issues.getId() + " deleted", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
     changeHandler.onChange();
@@ -307,7 +306,8 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     notificationRepository.saveAndFlush(notification);
 
     com.vaadin.flow.component.notification.Notification notify = com.vaadin.flow.component.notification.Notification
-        .show("Issue saved", 3000, Position.BOTTOM_END);
+        .show("Issue with priority " + issues.getPriority() + " saved", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
     changeHandler.onChange();

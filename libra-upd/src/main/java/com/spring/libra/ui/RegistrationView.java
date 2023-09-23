@@ -1,5 +1,8 @@
 package com.spring.libra.ui;
 
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
+
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
 import com.spring.libra.repository.UserRepository;
@@ -43,8 +46,7 @@ public class RegistrationView extends VerticalLayout {
   TextField password = new TextField("Password");
   TextField telephone = new TextField("Telephone");
   ComboBox<UserTypes> comboBox = new ComboBox<>("UserTypes");
-  Button reg = new Button
-      ("Register", VaadinIcon.CHECK_CIRCLE.create());
+  Button reg = new Button("Register", VaadinIcon.CHECK_CIRCLE.create());
 
   @Autowired
   public RegistrationView(
@@ -115,13 +117,13 @@ public class RegistrationView extends VerticalLayout {
   private void setupFields() {
     name.setRequired(true);
     name.setWidthFull();
-    name.setMaxWidth("350px");
-    name.setMinWidth("100px");
+    name.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    name.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     name.setClearButtonVisible(true);
 
     email.setWidthFull();
-    email.setMaxWidth("350px");
-    email.setMinWidth("100px");
+    email.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    email.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     email.setClearButtonVisible(true);
     email.setPrefixComponent(VaadinIcon.ENVELOPE.create());
     email.setPlaceholder("example@gmail.com");
@@ -131,25 +133,25 @@ public class RegistrationView extends VerticalLayout {
 
     login.setRequired(true);
     login.setWidthFull();
-    login.setMaxWidth("350px");
-    login.setMinWidth("100px");
+    login.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    login.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     login.setClearButtonVisible(true);
 
     password.setRequired(true);
     password.setWidthFull();
-    password.setMaxWidth("350px");
-    password.setMinWidth("100px");
+    password.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    password.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     password.setClearButtonVisible(true);
 
     telephone.setRequired(true);
     telephone.setWidthFull();
-    telephone.setMaxWidth("350px");
-    telephone.setMinWidth("100px");
+    telephone.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    telephone.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     telephone.setClearButtonVisible(true);
 
     comboBox.setWidthFull();
-    comboBox.setMaxWidth("350px");
-    comboBox.setMinWidth("100px");
+    comboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    comboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     comboBox.setRequired(true);
     comboBox.setItems(this.userTypesRepository.findAll());
     comboBox.setItemLabelGenerator(userTypes -> userTypes.getUserType().name());
@@ -157,7 +159,7 @@ public class RegistrationView extends VerticalLayout {
 
     reg.setWidthFull();
     reg.setMaxWidth("250px");
-    reg.setMinWidth("100px");
+    reg.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
   }
 
   void save() {

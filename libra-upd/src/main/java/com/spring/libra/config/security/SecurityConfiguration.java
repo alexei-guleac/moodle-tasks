@@ -24,6 +24,7 @@ public class SecurityConfiguration
   private static final String LOGIN_URL = "/login";
   private static final String REG_URL = "/register/**";
   private static final String LOGOUT_SUCCESS_URL = "/login";
+
   private final UserDetailsServiceImpl userDetailsService;
 
   /**

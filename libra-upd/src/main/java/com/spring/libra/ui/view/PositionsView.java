@@ -1,14 +1,18 @@
 package com.spring.libra.ui.view;
 
 import static com.spring.libra.constants.DateTime.CUSTOM_FORMATTER;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_GRID_HEIGHT;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_INDEX_MAX_WIDTH;
 import static com.spring.libra.util.ui.GridUtils.createMenuToggle;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import com.spring.libra.config.security.SecurityService;
+import com.spring.libra.constants.Routes;
 import com.spring.libra.model.entity.City;
 import com.spring.libra.model.entity.ConnectionTypes;
 import com.spring.libra.model.entity.Pos;
 import com.spring.libra.repository.PosRepository;
+import com.spring.libra.ui.context.PositionsContextMenu;
 import com.spring.libra.ui.editor.CityEditor;
 import com.spring.libra.ui.editor.PosEditor;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
@@ -40,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-@Route(value = "/positions")
+@Route(value = Routes.POSITIONS)
 public class PositionsView extends VerticalLayout {
 
   final PaginatedGrid<Pos> grid;
@@ -91,7 +95,7 @@ public class PositionsView extends VerticalLayout {
     this.goToIssues = new Button("Go To Issues");
     goToIssues.addClickListener(e ->
         goToIssues.getUI().ifPresent(ui ->
-            ui.navigate("/issues"))
+            ui.navigate(Routes.ISSUES))
     );
 
     VerticalLayout header = getVerticalLayoutHeader(securityService);
@@ -107,7 +111,9 @@ public class PositionsView extends VerticalLayout {
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, toggleButton, actions, grid, editor, cityEditor);
+    PositionsContextMenu contextMenu = new PositionsContextMenu(grid, editor, repo);
+
+    add(header, spacing, toggleButton, actions, grid, contextMenu, editor, cityEditor);
 
     setupGrid();
 
@@ -166,7 +172,7 @@ public class PositionsView extends VerticalLayout {
 
         dialog.setWidthFull();
         dialog.setMinWidth("200px");
-        dialog.setMaxWidth("500px");
+        dialog.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
         dialog.open();
       }
     };
@@ -186,7 +192,7 @@ public class PositionsView extends VerticalLayout {
   }
 
   private void setupGrid() {
-    grid.setHeight("500px");
+    grid.setHeight(DEFAULT_GRID_HEIGHT);
     grid.setColumns("id", "posName", "telephone", "cityId", "model", "brand",
         "daysClosed", "insertDate");
     grid.getColumnByKey("id").setAutoWidth(true).setFlexGrow(0).setFrozen(true);
@@ -194,18 +200,19 @@ public class PositionsView extends VerticalLayout {
     grid.getColumnByKey("daysClosed").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
+    final String edit = "Edit";
     final Column<Pos> column = grid.addComponentColumn(t -> {
-      Button editButton = new Button("Edit");
+      Button editButton = new Button(edit);
       editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
       editButton.addClickListener(click -> editor.editPosition(t));
       return editButton;
     }).setWidth("auto").setFlexGrow(0);
-    column.setHeader("Edit");
+    column.setHeader(edit);
 
     grid.getColumns()
         .forEach(posColumn -> {
           final String key = posColumn.getKey();
-          if (isNotBlank(key) && !key.equals("Edit")) {
+          if (isNotBlank(key) && !key.equals(edit)) {
             toggleableColumns.put(posColumn, key);
           }
         });
@@ -227,16 +234,17 @@ public class PositionsView extends VerticalLayout {
     if (securityService.getAuthenticatedUser() != null) {
 
       ConfirmDialog dialog = new ConfirmDialog();
-      dialog.setHeader("Logout");
+      final String logout = "Logout";
+      dialog.setHeader(logout);
       dialog.setText("Do you want to log out from the system now?");
       dialog.setCancelable(true);
 
-      dialog.setConfirmText("Logout");
+      dialog.setConfirmText(logout);
       dialog.addConfirmListener(event -> securityService.logout());
 
-      Button logout = new Button("Logout", click ->
+      Button button = new Button(logout, click ->
           dialog.open());
-      VerticalLayout verticalLayout = new VerticalLayout(logout);
+      VerticalLayout verticalLayout = new VerticalLayout(button);
       verticalLayout.setJustifyContentMode(JustifyContentMode.END);
       verticalLayout.setAlignItems((Alignment.END));
       verticalLayout.setAlignSelf(Alignment.END);

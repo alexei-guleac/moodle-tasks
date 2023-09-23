@@ -1,5 +1,9 @@
 package com.spring.libra.ui.editor;
 
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
+import static com.spring.libra.constants.Notifications.DEFAULT_SHOW_TIME;
+
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
 import com.spring.libra.repository.UserRepository;
@@ -47,11 +51,9 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   ComboBox<UserTypes> comboBox = new ComboBox<>("UserTypes");
 
   /* Action buttons */
-  Button save = new Button
-      ("Save", VaadinIcon.CHECK.create());
+  Button save = new Button("Save", VaadinIcon.CHECK.create());
   Button cancel = new Button("Cancel", VaadinIcon.ESC.create());
-  Button delete = new Button
-      ("Delete", VaadinIcon.TRASH.create());
+  Button delete = new Button("Delete", VaadinIcon.TRASH.create());
   HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
   Binder<User> binder = new Binder<>(User.class);
@@ -95,7 +97,9 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   private void addActionButtons() {
 
     ConfirmDialog saveDialog = new ConfirmDialog();
-    saveDialog.setHeader("Save");
+
+    saveDialog.setHeader("Save user");
+ 
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -103,7 +107,9 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
-    deleteDialog.setHeader("Delete");
+
+    deleteDialog.setHeader("Delete user");
+
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
@@ -123,13 +129,13 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   private void setupFields(UserTypesRepository userTypesRepository) {
     name.setRequired(true);
     name.setWidthFull();
-    name.setMaxWidth("350px");
-    name.setMinWidth("100px");
+    name.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    name.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     name.setClearButtonVisible(true);
 
     email.setWidthFull();
-    email.setMaxWidth("350px");
-    email.setMinWidth("100px");
+    email.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    email.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     email.setClearButtonVisible(true);
     email.setPrefixComponent(VaadinIcon.ENVELOPE.create());
     email.setInvalid(true);
@@ -138,14 +144,14 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
     login.setRequired(true);
     login.setWidthFull();
-    login.setMaxWidth("350px");
-    login.setMinWidth("100px");
+    login.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    login.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     login.setClearButtonVisible(true);
 
     password.setRequired(true);
     password.setWidthFull();
-    password.setMaxWidth("350px");
-    password.setMinWidth("100px");
+    password.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    password.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     password.setAllowedCharPattern("[A-Za-z0-9]");
     password.setMinLength(6);
     password.setMaxLength(12);
@@ -153,13 +159,13 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
     telephone.setRequired(true);
     telephone.setWidthFull();
-    telephone.setMaxWidth("350px");
-    telephone.setMinWidth("100px");
+    telephone.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    telephone.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     telephone.setClearButtonVisible(true);
 
     comboBox.setWidthFull();
-    comboBox.setMaxWidth("350px");
-    comboBox.setMinWidth("100px");
+    comboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    comboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     comboBox.setRequired(true);
     comboBox.setItems(userTypesRepository.findAll());
     comboBox.setItemLabelGenerator(userTypes -> userTypes.getUserType().name());
@@ -184,7 +190,9 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   void delete() {
     repository.delete(user);
 
-    Notification notify = Notification.show("User deleted", 3000, Position.BOTTOM_END);
+    Notification notify = Notification
+        .show("User with id # " + user.getId() + " deleted", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
     changeHandler.onChange();
@@ -193,7 +201,9 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   void save() {
     repository.save(user);
 
-    Notification notify = Notification.show("User saved", 3000, Position.BOTTOM_END);
+    Notification notify = Notification
+        .show("User with name " + user.getName() + " saved", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
     changeHandler.onChange();

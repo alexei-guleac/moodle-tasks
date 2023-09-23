@@ -1,5 +1,9 @@
 package com.spring.libra.ui.editor;
 
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
+import static com.spring.libra.constants.Notifications.DEFAULT_SHOW_TIME;
+
 import com.spring.libra.model.entity.City;
 import com.spring.libra.model.entity.ConnectionTypes;
 import com.spring.libra.model.entity.Pos;
@@ -60,11 +64,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
   Checkbox afternoonClosing = new Checkbox("afternoonClosing");
 
   /* Action buttons */
-  Button save = new Button
-      ("Save", VaadinIcon.CHECK.create());
+  Button save = new Button("Save", VaadinIcon.CHECK.create());
   Button cancel = new Button("Cancel", VaadinIcon.ESC.create());
-  Button delete = new Button
-      ("Delete", VaadinIcon.TRASH.create());
+  Button delete = new Button("Delete", VaadinIcon.TRASH.create());
   HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
   Binder<Pos> binder = new Binder<>(Pos.class);
@@ -114,9 +116,11 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
   }
 
   private void addActionsForButtons() {
-    
+
     ConfirmDialog saveDialog = new ConfirmDialog();
-    saveDialog.setHeader("Save");
+
+    saveDialog.setHeader("Save position");
+
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -124,7 +128,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
-    deleteDialog.setHeader("Delete");
+
+    deleteDialog.setHeader("Delete pos");
+
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
@@ -145,59 +151,59 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
       CityRepository cityRepository) {
     posName.setRequired(true);
     posName.setWidthFull();
-    posName.setMaxWidth("350px");
-    posName.setMinWidth("100px");
+    posName.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    posName.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     posName.setClearButtonVisible(true);
 
     telephone.setRequired(true);
     telephone.setWidthFull();
-    telephone.setMaxWidth("350px");
-    telephone.setMinWidth("100px");
+    telephone.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    telephone.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     telephone.setClearButtonVisible(true);
 
     cellPhone.setWidthFull();
-    cellPhone.setMaxWidth("350px");
-    cellPhone.setMinWidth("100px");
+    cellPhone.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    cellPhone.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     cellPhone.setClearButtonVisible(true);
 
     address.setRequired(true);
     address.setWidthFull();
-    address.setMaxWidth("350px");
-    address.setMinWidth("100px");
+    address.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    address.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     address.setClearButtonVisible(true);
 
     model.setRequired(true);
     model.setWidthFull();
-    model.setMaxWidth("350px");
-    model.setMinWidth("100px");
+    model.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    model.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     model.setClearButtonVisible(true);
 
     brand.setRequired(true);
     brand.setWidthFull();
-    brand.setMaxWidth("350px");
-    brand.setMinWidth("100px");
+    brand.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    brand.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     brand.setClearButtonVisible(true);
 
     daysClosed.setRequired(true);
     daysClosed.setWidthFull();
-    daysClosed.setMaxWidth("350px");
-    daysClosed.setMinWidth("100px");
+    daysClosed.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    daysClosed.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     daysClosed.setClearButtonVisible(true);
 
     cityComboBox.setWidthFull();
     cityComboBox.setRequired(true);
-    cityComboBox.setMaxWidth("350px");
-    cityComboBox.setMinWidth("100px");
+    cityComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    cityComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     cityComboBox.setItems(cityRepository.findAll());
     cityComboBox.setItemLabelGenerator(City::getCityName);
     cityComboBox.addValueChangeListener(this::setCity);
 
     connectionTypesComboBox.setWidthFull();
     connectionTypesComboBox.setRequired(true);
-    connectionTypesComboBox.setMaxWidth("350px");
-    connectionTypesComboBox.setMinWidth("100px");
-    List<ConnectionTypes> all1 = connectionTypesRepository.findAll();
-    connectionTypesComboBox.setItems(all1);
+    connectionTypesComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    connectionTypesComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    List<ConnectionTypes> connectionTypesList = connectionTypesRepository.findAll();
+    connectionTypesComboBox.setItems(connectionTypesList);
     connectionTypesComboBox
         .setItemLabelGenerator(connectionTypes -> connectionTypes.getConnectionType().name());
     connectionTypesComboBox.addValueChangeListener(this::setConnectionType);
@@ -223,7 +229,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
   void delete() {
     repository.delete(pos);
 
-    Notification notify = Notification.show("Position deleted", 3000, Position.BOTTOM_END);
+    Notification notify = Notification
+        .show("Position with id # " + pos.getId() + " deleted", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
     changeHandler.onChange();
@@ -238,7 +246,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
     repository.saveAndFlush(pos);
 
-    Notification notify = Notification.show("Position saved", 3000, Position.BOTTOM_END);
+    Notification notify = Notification
+        .show("Position with name " + pos.getPosName() + " saved", DEFAULT_SHOW_TIME,
+            Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
     changeHandler.onChange();

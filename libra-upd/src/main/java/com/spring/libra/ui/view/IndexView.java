@@ -1,6 +1,10 @@
 package com.spring.libra.ui.view;
 
+import static com.spring.libra.constants.ElementsSize.DEFAULT_INDEX_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_INDEX_MIN_WIDTH;
+
 import com.spring.libra.config.security.SecurityService;
+import com.spring.libra.constants.Routes;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.enums.UserType;
 import com.spring.libra.repository.UserRepository;
@@ -70,84 +74,84 @@ public class IndexView extends VerticalLayout {
 
   private void setAdminButtons() {
     positions.setWidthFull();
-    positions.setMaxWidth("500px");
-    positions.setMinWidth("100px");
+    positions.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    positions.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     issues.setWidthFull();
-    issues.setMaxWidth("500px");
-    issues.setMinWidth("100px");
+    issues.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    issues.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     users.setWidthFull();
-    users.setMaxWidth("500px");
-    users.setMinWidth("100px");
+    users.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    users.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     myIssues.setWidthFull();
-    myIssues.setMaxWidth("500px");
-    myIssues.setMinWidth("100px");
+    myIssues.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    myIssues.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     myNotifications.setWidthFull();
-    myNotifications.setMaxWidth("500px");
-    myNotifications.setMinWidth("100px");
+    myNotifications.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    myNotifications.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     positions.addClickListener(e ->
         positions.getUI().ifPresent(ui ->
-            ui.navigate("positions"))
+            ui.navigate(Routes.POSITIONS))
     );
 
     issues.addClickListener(e ->
         issues.getUI().ifPresent(ui ->
-            ui.navigate("issues"))
+            ui.navigate(Routes.ISSUES))
     );
 
     users.addClickListener(e ->
         users.getUI().ifPresent(ui ->
-            ui.navigate("users"))
+            ui.navigate(Routes.USERS))
     );
 
     myIssues.addClickListener(e ->
         users.getUI().ifPresent(ui ->
-            ui.navigate("myissues"))
+            ui.navigate(Routes.MY_ISSUES))
     );
 
     myNotifications.addClickListener(e ->
         users.getUI().ifPresent(ui ->
-            ui.navigate("mynotifications"))
+            ui.navigate(Routes.MY_NOTIFICATIONS))
     );
   }
 
   private void setUserButtons() {
 
     positions.setWidthFull();
-    positions.setMaxWidth("500px");
-    positions.setMinWidth("100px");
+    positions.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    positions.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
     positions.setEnabled(false);
 
     issues.setWidthFull();
-    issues.setMaxWidth("500px");
-    issues.setMinWidth("100px");
+    issues.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    issues.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
     issues.setEnabled(false);
 
     users.setWidthFull();
-    users.setMaxWidth("500px");
-    users.setMinWidth("100px");
+    users.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    users.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
     users.setEnabled(false);
 
     myIssues.setWidthFull();
-    myIssues.setMaxWidth("500px");
-    myIssues.setMinWidth("100px");
+    myIssues.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    myIssues.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     myNotifications.setWidthFull();
-    myNotifications.setMaxWidth("500px");
-    myNotifications.setMinWidth("100px");
+    myNotifications.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+    myNotifications.setMinWidth(DEFAULT_INDEX_MIN_WIDTH);
 
     myIssues.addClickListener(e ->
         users.getUI().ifPresent(ui ->
-            ui.navigate("myissues"))
+            ui.navigate(Routes.MY_ISSUES))
     );
 
     myNotifications.addClickListener(e ->
         users.getUI().ifPresent(ui ->
-            ui.navigate("mynotifications"))
+            ui.navigate(Routes.MY_NOTIFICATIONS))
     );
   }
 }
