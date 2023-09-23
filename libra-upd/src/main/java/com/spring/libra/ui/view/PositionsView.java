@@ -32,11 +32,14 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -199,6 +202,14 @@ public class PositionsView extends VerticalLayout {
     grid.getColumnByKey("telephone").setAutoWidth(true).setFlexGrow(0);
     grid.getColumnByKey("daysClosed").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
+    grid.removeColumnByKey("insertDate");
+    grid.addColumn(
+        new LocalDateTimeRenderer<>(Pos::getInsertDate,
+            DateTimeFormatter
+                .ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
+        )
+    ).setHeader("Insert Date").setAutoWidth(true).setFlexGrow(0);
 
     final String edit = "Edit";
     final Column<Pos> column = grid.addComponentColumn(t -> {

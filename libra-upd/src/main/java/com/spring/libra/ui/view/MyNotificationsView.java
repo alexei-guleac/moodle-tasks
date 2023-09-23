@@ -24,10 +24,13 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -130,6 +133,20 @@ public class MyNotificationsView extends VerticalLayout {
     grid.getColumnByKey("priority").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
+    grid.removeColumnByKey("creationDate");
+    grid.addColumn(
+        new LocalDateTimeRenderer<>(Notification::getCreationDate,
+            DateTimeFormatter
+                .ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
+        )
+    ).setHeader("Creation Date").setAutoWidth(true).setFlexGrow(0);
+    grid.addColumn(
+        new LocalDateTimeRenderer<>(Notification::getAssignedDate,
+            DateTimeFormatter
+                .ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
+        )
+    ).setHeader("Assigned Date").setAutoWidth(true).setFlexGrow(0);
+
     // Sets the max number of items to be rendered on the grid for each page
     grid.setPageSize(10);
     // Sets how many pages should be visible on the pagination before and/or after the current selected page
@@ -178,10 +195,10 @@ public class MyNotificationsView extends VerticalLayout {
   void listUserIssues(String filterText) {
 
     if (securityService.getAuthenticatedUser() != null) {
-      User user = userRepository.findByLogin(securityService.getAuthenticatedUser().getUsername())
+      final String username = securityService.getAuthenticatedUser().getUsername();
+      User user = userRepository.findByLogin(username)
           .orElseThrow(() -> new UsernameNotFoundException(
-              "User Not Found with username: " + securityService.getAuthenticatedUser()
-                  .getUsername()));
+              "User Not Found with username: " + username));
 
       if (StringUtils.isEmpty(filterText)) {
         grid.setItems(repo.findByAssignedId(user));

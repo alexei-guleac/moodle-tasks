@@ -33,11 +33,14 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -193,6 +196,20 @@ public class IssuesView extends VerticalLayout {
     grid.getColumnByKey("problemId").setAutoWidth(true).setFlexGrow(0);
     grid.getColumnByKey("priority").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+
+    grid.removeColumnByKey("creationDate");
+    grid.addColumn(
+        new LocalDateTimeRenderer<>(Issue::getCreationDate,
+            DateTimeFormatter
+                .ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
+        )
+    ).setHeader("Creation Date").setAutoWidth(true).setFlexGrow(0);
+    grid.addColumn(
+        new LocalDateTimeRenderer<>(Issue::getAssignedDate,
+            DateTimeFormatter
+                .ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
+        )
+    ).setHeader("Assigned Date").setAutoWidth(true).setFlexGrow(0);
 
     final String edit = "Edit";
     final Column<Issue> column = grid.addComponentColumn(t -> {
