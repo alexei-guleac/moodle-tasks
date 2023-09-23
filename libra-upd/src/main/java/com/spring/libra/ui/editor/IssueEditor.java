@@ -1,6 +1,7 @@
 package com.spring.libra.ui.editor;
 
 import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
+import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH_EXT;
 import static com.spring.libra.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
 import static com.spring.libra.constants.Notifications.DEFAULT_SHOW_TIME;
 
@@ -25,6 +26,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -60,7 +63,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   private final SecurityService securityService;
 
   /* Fields to edit properties in User entity */
-  TextField problemId = new TextField("ProblemId");
+  TextField problemId = new TextField("Problem Id");
   TextField priority = new TextField("Priority");
   TextField memo = new TextField("Memo");
   TextField description = new TextField("Description");
@@ -69,10 +72,10 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
   TextField solution = new TextField("Solution");
 
-  ComboBox<Pos> posIdComboBox = new ComboBox<>("PosId");
-  ComboBox<IssueTypes> issueTypesComboBox = new ComboBox<>("IssueTypeName");
-  ComboBox<Statuses> statusesComboBox = new ComboBox<>("Statuses");
-  ComboBox<User> userAssignedComboBox = new ComboBox<>("UserAssigned");
+  ComboBox<Pos> posIdComboBox = new ComboBox<>("Position Id");
+  ComboBox<IssueTypes> issueTypesComboBox = new ComboBox<>("Issue Type");
+  ComboBox<Statuses> statusesComboBox = new ComboBox<>("Status");
+  ComboBox<User> userAssignedComboBox = new ComboBox<>("User assigned");
 
   /* Action buttons */
   Button save = new Button("Save", VaadinIcon.CHECK.create());
@@ -103,13 +106,33 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
     setupFields(issueTypesRepository, posRepository, statusesRepository, userRepository);
 
-    VerticalLayout spacing = new VerticalLayout(problemId, priority, memo, description,
-        assignedDate, solution, posIdComboBox, issueTypesComboBox, statusesComboBox,
-        userAssignedComboBox, actions);
-    spacing.setSpacing(true);
-    spacing.setAlignItems(Alignment.CENTER);
+    actions.setSpacing(true);
+    actions.setHeight("80px");
+    actions.setJustifyContentMode(JustifyContentMode.CENTER);
+    actions.setAlignItems((Alignment.CENTER));
+    actions.setAlignSelf(Alignment.CENTER);
 
-    add(spacing);
+    FormLayout formLayout = new FormLayout(
+        new HorizontalLayout(problemId, priority, memo),
+        new HorizontalLayout(description, assignedDate),
+        new HorizontalLayout(solution, posIdComboBox),
+        new HorizontalLayout(issueTypesComboBox, statusesComboBox, userAssignedComboBox),
+        actions);
+    formLayout.setResponsiveSteps(
+        // Use one column by default
+        new ResponsiveStep("0", 1),
+        // Use two columns, if layout's width exceeds 1000px
+        new ResponsiveStep("1000px", 2));
+    formLayout.setColspan(actions, 2);
+
+    final VerticalLayout verticalLayout = new VerticalLayout(formLayout);
+    verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+    verticalLayout.setAlignItems((Alignment.CENTER));
+    verticalLayout.setAlignSelf(Alignment.CENTER);
+    verticalLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+    verticalLayout.setHorizontalComponentAlignment(Alignment.CENTER);
+    add(verticalLayout);
+
     // bind using naming convention
     binder.forField(problemId)
         .withConverter(new StringToIntegerConverter("must be integer"))
@@ -174,7 +197,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
     description.setRequired(true);
     description.setWidthFull();
-    description.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    description.setMaxWidth(DEFAULT_FORM_MAX_WIDTH_EXT);
     description.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     description.setClearButtonVisible(true);
 
@@ -185,7 +208,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     assignedDate.addValueChangeListener(this::setAssignedDate);
 
     solution.setWidthFull();
-    solution.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    solution.setMaxWidth(DEFAULT_FORM_MAX_WIDTH_EXT);
     solution.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     solution.setClearButtonVisible(true);
 

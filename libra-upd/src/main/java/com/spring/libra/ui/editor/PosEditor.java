@@ -17,6 +17,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -46,22 +48,22 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
 
   /* Fields to edit properties in User entity */
-  TextField posName = new TextField("PosName");
+  TextField posName = new TextField("Pos Name");
   TextField telephone = new TextField("Telephone");
   TextField cellPhone = new TextField("CellPhone");
   TextField address = new TextField("Address");
 
   TextField model = new TextField("Model");
   TextField brand = new TextField("Brand");
-  TextField daysClosed = new TextField("DaysClosed");
+  TextField daysClosed = new TextField("Days Closed");
 
-  ComboBox<City> cityComboBox = new ComboBox<>("CityId");
-  ComboBox<ConnectionTypes> connectionTypesComboBox = new ComboBox<>("ConnectionTypeId");
+  ComboBox<City> cityComboBox = new ComboBox<>("City Id");
+  ComboBox<ConnectionTypes> connectionTypesComboBox = new ComboBox<>("Connection Type");
 
-  Checkbox morningOpening = new Checkbox("morningOpening");
-  Checkbox morningClosing = new Checkbox("morningClosing");
-  Checkbox afternoonOpening = new Checkbox("afternoonOpening");
-  Checkbox afternoonClosing = new Checkbox("afternoonClosing");
+  Checkbox morningOpening = new Checkbox("Morning Opening");
+  Checkbox morningClosing = new Checkbox("Morning Closing");
+  Checkbox afternoonOpening = new Checkbox("Afternoon Open");
+  Checkbox afternoonClosing = new Checkbox("Afternoon Close");
 
   /* Action buttons */
   Button save = new Button("Save", VaadinIcon.CHECK.create());
@@ -87,13 +89,34 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
     setupFields(connectionTypesRepository, cityRepository);
 
-    VerticalLayout spacing = new VerticalLayout(posName, telephone, cellPhone, address,
-        model, brand, cityComboBox, connectionTypesComboBox,
-        morningOpening, morningClosing, afternoonOpening, afternoonClosing, daysClosed, actions);
-    spacing.setSpacing(true);
-    spacing.setAlignItems(Alignment.CENTER);
+    actions.setSpacing(true);
+    actions.setHeight("80px");
+    actions.setJustifyContentMode(JustifyContentMode.CENTER);
+    actions.setAlignItems((Alignment.CENTER));
+    actions.setAlignSelf(Alignment.CENTER);
 
-    add(spacing);
+    FormLayout formLayout = new FormLayout(
+        new HorizontalLayout(posName, telephone, cellPhone),
+        new HorizontalLayout(address, model, brand),
+        new HorizontalLayout(cityComboBox, connectionTypesComboBox, daysClosed),
+        new HorizontalLayout(morningOpening, morningClosing, afternoonOpening, afternoonClosing),
+        actions);
+
+    formLayout.setResponsiveSteps(
+        // Use one column by default
+        new ResponsiveStep("0", 1),
+        // Use two columns, if layout's width exceeds 1200px
+        new ResponsiveStep("1200px", 2));
+    formLayout.setColspan(actions, 2);
+
+    final VerticalLayout verticalLayout = new VerticalLayout(formLayout);
+    verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+    verticalLayout.setAlignItems((Alignment.CENTER));
+    verticalLayout.setAlignSelf(Alignment.CENTER);
+    verticalLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+    verticalLayout.setHorizontalComponentAlignment(Alignment.CENTER);
+    add(verticalLayout);
+
     // bind using naming convention
     binder.forField(daysClosed)
         .withConverter(new StringToIntegerConverter("must be integer"))

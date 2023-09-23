@@ -48,7 +48,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   TextField login = new TextField("Login");
   PasswordField password = new PasswordField("Password");
   TextField telephone = new TextField("Telephone");
-  ComboBox<UserTypes> comboBox = new ComboBox<>("UserTypes");
+  ComboBox<UserTypes> userTypesComboBox = new ComboBox<>("User Type");
 
   /* Action buttons */
   Button save = new Button("Save", VaadinIcon.CHECK.create());
@@ -71,7 +71,8 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
     setupFields(userTypesRepository);
 
-    VerticalLayout spacing = new VerticalLayout(name, email, login, password, telephone, comboBox,
+    VerticalLayout spacing = new VerticalLayout(name, email, login, password, telephone,
+        userTypesComboBox,
         actions);
     spacing.setSpacing(true);
     spacing.setAlignItems(Alignment.CENTER);
@@ -163,13 +164,13 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     telephone.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     telephone.setClearButtonVisible(true);
 
-    comboBox.setWidthFull();
-    comboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
-    comboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
-    comboBox.setRequired(true);
-    comboBox.setItems(userTypesRepository.findAll());
-    comboBox.setItemLabelGenerator(userTypes -> userTypes.getUserType().name());
-    comboBox.addValueChangeListener(this::setType);
+    userTypesComboBox.setWidthFull();
+    userTypesComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    userTypesComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    userTypesComboBox.setRequired(true);
+    userTypesComboBox.setItems(userTypesRepository.findAll());
+    userTypesComboBox.setItemLabelGenerator(userTypes -> userTypes.getUserType().name());
+    userTypesComboBox.addValueChangeListener(this::setType);
   }
 
   private void setPasswordValue(ComponentValueChangeEvent<PasswordField, String> listener) {
@@ -219,14 +220,14 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
       // Find fresh entity for editing
       user = repository.findById(usr.getId()).get();
 
-      comboBox.setValue(new UserTypes()
+      userTypesComboBox.setValue(new UserTypes()
           .withId(user.getUserTypeId().getId())
           .withUserType(user.getUserTypeId().getUserType()));
 
     } else {
       user = usr;
 
-      comboBox.setValue(null);
+      userTypesComboBox.setValue(null);
     }
     cancel.setVisible(persisted);
         /* Bind user properties to similarly named fields
