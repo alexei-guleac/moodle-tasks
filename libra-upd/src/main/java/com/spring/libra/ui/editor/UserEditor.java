@@ -1,4 +1,4 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.editor;
 
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
@@ -12,9 +12,13 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.RegexpValidator;
@@ -38,7 +42,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   TextField name = new TextField("Name");
   EmailField email = new EmailField("Email");
   TextField login = new TextField("Login");
-  TextField password = new TextField("Password");
+  PasswordField password = new PasswordField("Password");
   TextField telephone = new TextField("Telephone");
   ComboBox<UserTypes> comboBox = new ComboBox<>("UserTypes");
 
@@ -89,12 +93,13 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   }
 
   private void addActionButtons() {
-    
+
     ConfirmDialog saveDialog = new ConfirmDialog();
     saveDialog.setHeader("Save");
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
+    saveDialog.setConfirmButtonTheme("primary success");
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
@@ -102,6 +107,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
+    deleteDialog.setConfirmButtonTheme("primary error");
     deleteDialog.addConfirmListener(e -> delete());
 
     addKeyPressListener(Key.ENTER, e -> saveDialog.open());
@@ -140,6 +146,9 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     password.setWidthFull();
     password.setMaxWidth("350px");
     password.setMinWidth("100px");
+    password.setAllowedCharPattern("[A-Za-z0-9]");
+    password.setMinLength(6);
+    password.setMaxLength(12);
     password.setClearButtonVisible(true);
 
     telephone.setRequired(true);
@@ -157,7 +166,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     comboBox.addValueChangeListener(this::setType);
   }
 
-  private void setPasswordValue(ComponentValueChangeEvent<TextField, String> listener) {
+  private void setPasswordValue(ComponentValueChangeEvent<PasswordField, String> listener) {
     System.out.println("ENCODED " + passwordEncoder.encode(listener.getValue()));
     this.user
         .setEncodedPassword(passwordEncoder.encode(listener.getValue()));
@@ -167,8 +176,6 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
       AbstractField.ComponentValueChangeEvent<ComboBox<UserTypes>, UserTypes> listener) {
     UserTypes value = listener.getValue();
     if (value != null) {
-      System.out.println(
-          "TYPE " + userTypesRepository.findByUserType(value.getUserType()).get());
       this.user
           .setUserTypeId(userTypesRepository.findByUserType(value.getUserType()).get());
     }
@@ -176,11 +183,19 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
   void delete() {
     repository.delete(user);
+
+    Notification notify = Notification.show("User deleted", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+
     changeHandler.onChange();
   }
 
   void save() {
     repository.save(user);
+
+    Notification notify = Notification.show("User saved", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
     changeHandler.onChange();
   }
 

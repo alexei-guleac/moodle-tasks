@@ -1,11 +1,12 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.view;
 
 import com.spring.libra.config.security.SecurityService;
-import com.spring.libra.model.entity.Notification;
+import com.spring.libra.model.entity.Issue;
 import com.spring.libra.model.entity.User;
-import com.spring.libra.repository.NotificationRepository;
+import com.spring.libra.repository.IssueRepository;
 import com.spring.libra.repository.UserRepository;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -14,34 +15,45 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-@Route(value = "/mynotifications")
-public class MyNotificationsView extends VerticalLayout {
+@Route(value = "/myissues")
+public class MyIssuesView extends VerticalLayout {
 
-  final PaginatedGrid<Notification> grid;
+  final PaginatedGrid<Issue> grid;
 
   final TextField filter;
 
-  private final NotificationRepository repo;
+  private final IssueRepository repo;
 
   private final UserRepository userRepository;
 
   private final SecurityService securityService;
 
-  public MyNotificationsView(NotificationRepository repo,
+  public MyIssuesView(IssueRepository repo,
       UserRepository userRepository,
       @Autowired SecurityService securityService) {
     this.userRepository = userRepository;
     this.securityService = securityService;
     this.repo = repo;
-    this.grid = new PaginatedGrid<>(Notification.class);
+    this.grid = new PaginatedGrid<>(Issue.class);
 
     this.filter = new TextField();
+
+    Button toggleButton = new Button("Toggle theme variant", click -> {
+      ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+      if (themeList.contains(Lumo.DARK)) {
+        themeList.remove(Lumo.DARK);
+      } else {
+        themeList.add(Lumo.DARK);
+      }
+    });
 
     VerticalLayout header = getVerticalLayoutHeader(securityService);
 
@@ -49,14 +61,14 @@ public class MyNotificationsView extends VerticalLayout {
     HorizontalLayout actions = new HorizontalLayout(filter);
 
     Text space = new Text("       ");
-    Text text = new Text("My notifications");
+    Text text = new Text("My issues");
 
     VerticalLayout spacing = new VerticalLayout(space, text);
     spacing.setSpacing(true);
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, actions, grid);
+    add(header, spacing, toggleButton, actions, grid);
 
     setupGrid();
 
@@ -76,7 +88,7 @@ public class MyNotificationsView extends VerticalLayout {
 
   private void setupGrid() {
     grid.setHeight("500px");
-    grid.setColumns("id", "issueId", "priority", "userCreatedId",
+    grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
         "description", "creationDate");
     grid.getColumnByKey("id").setWidth("60px").
         setFlexGrow(0);
@@ -105,7 +117,18 @@ public class MyNotificationsView extends VerticalLayout {
 
       Button logout = new Button("Logout", click ->
           dialog.open());
-      header = new VerticalLayout(logo, logout);
+      VerticalLayout verticalLayout = new VerticalLayout(logout);
+      verticalLayout.setJustifyContentMode(JustifyContentMode.END);
+      verticalLayout.setAlignItems((Alignment.END));
+      verticalLayout.setAlignSelf(Alignment.END);
+      verticalLayout.setSpacing(false);
+      verticalLayout.setPadding(false);
+      verticalLayout.setHeight("40px");
+
+      header = new VerticalLayout(verticalLayout, logo);
+      header.setSpacing(false);
+      header.setPadding(false);
+      header.setHeight("20px");
     } else {
       header = new VerticalLayout(logo);
     }

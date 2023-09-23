@@ -3,6 +3,7 @@ package com.spring.libra.ui;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -17,7 +18,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
   public static final String ROUTE = "login";
 
-  private final LoginForm login = new LoginForm();
+  private final LoginOverlay login = new LoginOverlay();
 
   Button reg = new Button("Register");
 
@@ -26,7 +27,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     VerticalLayout verticalLayout = new VerticalLayout();
     setupVerticalLayout(verticalLayout);
 
+    login.setOpened(true);
     login.setAction("login");
+    login.setTitle("Libra");
+    login.setDescription("Issue tracker");
 
     addActionForRegistrationButton();
 

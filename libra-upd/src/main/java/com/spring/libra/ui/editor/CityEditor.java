@@ -1,4 +1,4 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.editor;
 
 import com.spring.libra.model.entity.City;
 import com.spring.libra.repository.CityRepository;
@@ -7,6 +7,9 @@ import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -68,6 +71,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
+    saveDialog.setConfirmButtonTheme("primary success");
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
@@ -75,6 +79,7 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
+    deleteDialog.setConfirmButtonTheme("primary error");
     deleteDialog.addConfirmListener(e -> delete());
 
     addKeyPressListener(Key.ENTER, e -> saveDialog.open());
@@ -99,11 +104,19 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
 
   void delete() {
     repository.delete(city);
+
+    Notification notify = Notification.show("City deleted", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+
     changeHandler.onChange();
   }
 
   void save() {
     repository.save(city);
+
+    Notification notify = Notification.show("City saved", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
     changeHandler.onChange();
   }
 

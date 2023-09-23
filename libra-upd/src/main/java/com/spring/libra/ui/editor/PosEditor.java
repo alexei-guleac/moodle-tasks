@@ -1,4 +1,4 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.editor;
 
 import com.spring.libra.model.entity.City;
 import com.spring.libra.model.entity.ConnectionTypes;
@@ -14,6 +14,9 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -117,6 +120,7 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
+    saveDialog.setConfirmButtonTheme("primary success");
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
@@ -124,6 +128,7 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
+    deleteDialog.setConfirmButtonTheme("primary error");
     deleteDialog.addConfirmListener(e -> delete());
 
     addKeyPressListener(Key.ENTER, e -> saveDialog.open());
@@ -217,6 +222,10 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
 
   void delete() {
     repository.delete(pos);
+
+    Notification notify = Notification.show("Position deleted", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+
     changeHandler.onChange();
   }
 
@@ -228,6 +237,9 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
     System.out.println("FOR SAVE " + pos.toString());
 
     repository.saveAndFlush(pos);
+
+    Notification notify = Notification.show("Position saved", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
     changeHandler.onChange();
   }

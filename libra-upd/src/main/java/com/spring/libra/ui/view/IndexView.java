@@ -1,4 +1,4 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.view;
 
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.User;

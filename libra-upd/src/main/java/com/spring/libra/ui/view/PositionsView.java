@@ -1,15 +1,17 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.view;
 
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.City;
 import com.spring.libra.model.entity.ConnectionTypes;
 import com.spring.libra.model.entity.Pos;
 import com.spring.libra.repository.PosRepository;
+import com.spring.libra.ui.editor.CityEditor;
+import com.spring.libra.ui.editor.PosEditor;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -17,14 +19,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
 @Route(value = "/positions")
-public class PosView extends VerticalLayout {
+public class PositionsView extends VerticalLayout {
 
   final PaginatedGrid<Pos> grid;
 
@@ -44,7 +48,7 @@ public class PosView extends VerticalLayout {
 
   private final SecurityService securityService;
 
-  public PosView(PosRepository repo, PosEditor editor,
+  public PositionsView(PosRepository repo, PosEditor editor,
       CityEditor cityEditor, @Autowired SecurityService securityService) {
     this.cityEditor = cityEditor;
     this.securityService = securityService;
@@ -57,6 +61,17 @@ public class PosView extends VerticalLayout {
     this.addNewCityBtn = new Button("Add City", VaadinIcon.PLUS.create());
     addNewBtn.addThemeVariants
         (ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+    addNewCityBtn.addThemeVariants
+        (ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+
+    Button toggleButton = new Button("Toggle theme variant", click -> {
+      ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+      if (themeList.contains(Lumo.DARK)) {
+        themeList.remove(Lumo.DARK);
+      } else {
+        themeList.add(Lumo.DARK);
+      }
+    });
 
     this.goToIssues = new Button("Go To Issues");
     goToIssues.addClickListener(e ->
@@ -77,7 +92,7 @@ public class PosView extends VerticalLayout {
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, actions, grid, editor, cityEditor);
+    add(header, spacing, toggleButton, actions, grid, editor, cityEditor);
 
     setupGrid();
 
@@ -160,7 +175,18 @@ public class PosView extends VerticalLayout {
 
       Button logout = new Button("Logout", click ->
           dialog.open());
-      header = new VerticalLayout(logo, logout);
+      VerticalLayout verticalLayout = new VerticalLayout(logout);
+      verticalLayout.setJustifyContentMode(JustifyContentMode.END);
+      verticalLayout.setAlignItems((Alignment.END));
+      verticalLayout.setAlignSelf(Alignment.END);
+      verticalLayout.setSpacing(false);
+      verticalLayout.setPadding(false);
+      verticalLayout.setHeight("40px");
+
+      header = new VerticalLayout(verticalLayout, logo);
+      header.setSpacing(false);
+      header.setPadding(false);
+      header.setHeight("20px");
     } else {
       header = new VerticalLayout(logo);
     }

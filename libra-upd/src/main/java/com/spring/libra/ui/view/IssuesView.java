@@ -1,14 +1,18 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.view;
 
 import com.spring.libra.config.security.SecurityService;
+import com.spring.libra.model.entity.Issue;
+import com.spring.libra.model.entity.IssueTypes;
+import com.spring.libra.model.entity.Pos;
+import com.spring.libra.model.entity.Statuses;
 import com.spring.libra.model.entity.User;
-import com.spring.libra.model.entity.UserTypes;
-import com.spring.libra.repository.UserRepository;
+import com.spring.libra.repository.IssueRepository;
+import com.spring.libra.ui.editor.IssueEditor;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -16,78 +20,96 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-@Route(value = "/users")
-public class UsersView extends VerticalLayout {
+@Route(value = "/issues")
+public class IssuesView extends VerticalLayout {
 
-  final PaginatedGrid<User> grid;
+  final PaginatedGrid<Issue> grid;
 
-  final TextField filterEmail;
+  final TextField filter;
 
-  private final UserRepository repo;
+  private final IssueRepository repo;
 
   private final Button addNewBtn;
 
-  private final Button goToIssues;
+  private final Button goToUsers;
 
-  private final UserEditor editor;
+  private final Button goToPositions;
+
+  private final IssueEditor editor;
 
   private final SecurityService securityService;
 
-  public UsersView(UserRepository repo, UserEditor editor,
+  public IssuesView(IssueRepository repo, IssueEditor editor,
       @Autowired SecurityService securityService) {
     this.securityService = securityService;
     this.repo = repo;
     this.editor = editor;
-    this.grid = new PaginatedGrid<>(User.class);
+    this.grid = new PaginatedGrid<>(Issue.class);
 
-    this.filterEmail = new TextField();
-    this.addNewBtn = new Button("Add User", VaadinIcon.PLUS.create());
+    this.filter = new TextField();
+    this.addNewBtn = new Button("Add Issue", VaadinIcon.PLUS.create());
     addNewBtn.addThemeVariants
         (ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 
-    this.goToIssues = new Button("Go To Issues");
-    goToIssues.addClickListener(e ->
-        goToIssues.getUI().ifPresent(ui ->
-            ui.navigate("/issues"))
+    Button toggleButton = new Button("Toggle theme variant", click -> {
+      ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+      if (themeList.contains(Lumo.DARK)) {
+        themeList.remove(Lumo.DARK);
+      } else {
+        themeList.add(Lumo.DARK);
+      }
+    });
+
+    this.goToUsers = new Button("Go To Users");
+    goToUsers.addClickListener(e ->
+        goToUsers.getUI().ifPresent(ui ->
+            ui.navigate("/users"))
+    );
+    this.goToPositions = new Button("Go To Positions");
+    goToPositions.addClickListener(e ->
+        goToPositions.getUI().ifPresent(ui ->
+            ui.navigate("/positions"))
     );
 
-    // Logo text
-    VerticalLayout header = getVerticalLayoutForHeader(securityService);
+    VerticalLayout header = getVerticalLayoutHeader(securityService);
 
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filterEmail, addNewBtn, goToIssues);
+    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, goToUsers, goToPositions);
 
     Text space = new Text("       ");
-    Text text = new Text("User management");
+    Text text = new Text("Issue management");
 
     VerticalLayout spacing = new VerticalLayout(space, text);
     spacing.setSpacing(true);
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, actions, grid, editor);
+    add(header, spacing, toggleButton, actions, grid, editor);
 
     setupGrid();
 
-    filterEmail.setPlaceholder("Filter by email");
+    filter.setPlaceholder("Filter by description");
 
     // Hook logic to components
         /* Replace listing with filtered content when user
           changes filter*/
-    filterEmail.setValueChangeMode(ValueChangeMode.EAGER);
-    filterEmail.addValueChangeListener
-        (e -> listUsers(e.getValue()));
+    filter.setValueChangeMode(ValueChangeMode.EAGER);
+    filter.addValueChangeListener
+        (e -> listIssues(e.getValue()));
 
 
         /* Connect selected Customer to editor or hide if none
             is selected */
     grid.asSingleSelect().addValueChangeListener(e -> {
-      editor.editUser(e.getValue());
+      editor.editIssue(e.getValue());
     });
 
         /* Instantiate and edit new
@@ -100,21 +122,23 @@ public class UsersView extends VerticalLayout {
     // refresh data from backend
     editor.setChangeHandler(() -> {
       editor.setVisible(false);
-      listUsers(filterEmail.getValue());
+      listIssues(filter.getValue());
     });
 
     // Initialize listing
-    listUsers(null);
+    listIssues(null);
   }
 
-  private void addNewButton(UserEditor editor) {
-    addNewBtn.addClickListener(e -> editor.editUser
-        (new User(null, "", "", "", "", "", "", new UserTypes())));
+  private void addNewButton(IssueEditor editor) {
+    addNewBtn.addClickListener(e -> editor.editIssue
+        (new Issue(null, new Pos(), new IssueTypes(), 0, "", new Statuses(), "", new User(),
+            new User(), "", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "")));
   }
 
   private void setupGrid() {
     grid.setHeight("500px");
-    grid.setColumns("id", "name", "login", "email", "telephone");
+    grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
+        "description", "creationDate");
     grid.getColumnByKey("id").setWidth("60px").
         setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
@@ -125,7 +149,7 @@ public class UsersView extends VerticalLayout {
     grid.setPaginatorSize(5);
   }
 
-  private VerticalLayout getVerticalLayoutForHeader(@Autowired SecurityService securityService) {
+  private VerticalLayout getVerticalLayoutHeader(@Autowired SecurityService securityService) {
 
     H1 logo = new H1("Libra");
     logo.addClassName("logo");
@@ -142,7 +166,18 @@ public class UsersView extends VerticalLayout {
 
       Button logout = new Button("Logout", click ->
           dialog.open());
-      header = new VerticalLayout(logo, logout);
+      VerticalLayout verticalLayout = new VerticalLayout(logout);
+      verticalLayout.setJustifyContentMode(JustifyContentMode.END);
+      verticalLayout.setAlignItems((Alignment.END));
+      verticalLayout.setAlignSelf(Alignment.END);
+      verticalLayout.setSpacing(false);
+      verticalLayout.setPadding(false);
+      verticalLayout.setHeight("40px");
+
+      header = new VerticalLayout(verticalLayout, logo);
+      header.setSpacing(false);
+      header.setPadding(false);
+      header.setHeight("20px");
     } else {
       header = new VerticalLayout(logo);
     }
@@ -152,12 +187,12 @@ public class UsersView extends VerticalLayout {
     return header;
   }
 
-  void listUsers(String filterText) {
+  void listIssues(String filterText) {
     if (StringUtils.isEmpty(filterText)) {
       grid.setItems(repo.findAll());
     } else {
       grid.setItems(repo.
-          findByEmailStartsWithIgnoreCase(filterText));
+          findByDescriptionStartsWithIgnoreCase(filterText));
     }
   }
 }

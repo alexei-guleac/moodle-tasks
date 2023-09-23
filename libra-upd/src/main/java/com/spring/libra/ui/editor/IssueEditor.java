@@ -1,4 +1,4 @@
-package com.spring.libra.ui;
+package com.spring.libra.ui.editor;
 
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.Issue;
@@ -22,6 +22,8 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -127,6 +129,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
+    saveDialog.setConfirmButtonTheme("primary success");
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
@@ -134,6 +137,7 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     deleteDialog.setText("Do you want to delete entity?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
+    deleteDialog.setConfirmButtonTheme("primary error");
     deleteDialog.addConfirmListener(e -> delete());
 
     addKeyPressListener(Key.ENTER, e -> saveDialog.open());
@@ -264,6 +268,11 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
 
   void delete() {
     repository.delete(issues);
+
+    com.vaadin.flow.component.notification.Notification notify = com.vaadin.flow.component.notification.Notification
+        .show("Issue deleted", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
+
     changeHandler.onChange();
   }
 
@@ -296,6 +305,10 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
     Issue issue = repository.saveAndFlush(issues);
     notification.setIssueId(issue);
     notificationRepository.saveAndFlush(notification);
+
+    com.vaadin.flow.component.notification.Notification notify = com.vaadin.flow.component.notification.Notification
+        .show("Issue saved", 3000, Position.BOTTOM_END);
+    notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
     changeHandler.onChange();
   }
