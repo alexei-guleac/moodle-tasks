@@ -1,5 +1,8 @@
 package com.spring.libra.ui.view;
 
+import static com.spring.libra.util.ui.GridUtils.createMenuToggle;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
@@ -14,6 +17,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H4;
@@ -25,6 +29,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -46,6 +52,9 @@ public class UsersView extends VerticalLayout {
   private final UserEditor editor;
 
   private final SecurityService securityService;
+
+  private final Map<Column<?>, String> toggleableColumns = new HashMap<>();
+
 
   public UsersView(UserRepository repo, UserEditor editor,
       @Autowired SecurityService securityService) {
@@ -158,12 +167,24 @@ public class UsersView extends VerticalLayout {
     grid.getColumnByKey("telephone").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
-    grid.addComponentColumn(t -> {
+    final Column<User> column = grid.addComponentColumn(t -> {
       Button editButton = new Button("Edit");
       editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
       editButton.addClickListener(click -> editor.editUser(t));
       return editButton;
-    });
+    }).setWidth("auto").setFlexGrow(0);
+    column.setHeader("Edit");
+
+    grid.getColumns()
+        .forEach(userColumn -> {
+          final String key = userColumn.getKey();
+          if (isNotBlank(key) && !key.equals("Edit")) {
+            toggleableColumns.put(userColumn, key);
+          }
+        });
+    Column<User> settingColumn = grid.addColumn(box -> "").setWidth("auto").setFlexGrow(0);
+    grid.getHeaderRows().get(0).getCell(settingColumn)
+        .setComponent(createMenuToggle(toggleableColumns));
 
     // Sets the max number of items to be rendered on the grid for each page
     grid.setPageSize(10);
