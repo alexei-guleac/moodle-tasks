@@ -11,6 +11,7 @@ import com.spring.libra.model.entity.Pos;
 import com.spring.libra.model.entity.Statuses;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.repository.IssueRepository;
+import com.spring.libra.ui.context.IssueContextMenu;
 import com.spring.libra.ui.editor.IssueEditor;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -107,7 +108,9 @@ public class IssuesView extends VerticalLayout {
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, toggleButton, actions, grid, editor);
+    IssueContextMenu contextMenu = new IssueContextMenu(grid, editor, repo);
+
+    add(header, spacing, toggleButton, actions, grid, contextMenu, editor);
 
     setupGrid();
 

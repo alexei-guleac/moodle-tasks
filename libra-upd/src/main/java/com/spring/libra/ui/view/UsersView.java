@@ -7,6 +7,7 @@ import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.model.entity.User;
 import com.spring.libra.model.entity.UserTypes;
 import com.spring.libra.repository.UserRepository;
+import com.spring.libra.ui.context.UserContextMenu;
 import com.spring.libra.ui.editor.UserEditor;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -97,7 +98,9 @@ public class UsersView extends VerticalLayout {
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, toggleButton, actions, grid, editor);
+    UserContextMenu contextMenu = new UserContextMenu(grid, editor, repo);
+
+    add(header, spacing, toggleButton, actions, grid, contextMenu, editor);
 
     setupGrid();
 

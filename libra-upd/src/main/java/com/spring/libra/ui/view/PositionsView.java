@@ -9,6 +9,7 @@ import com.spring.libra.model.entity.City;
 import com.spring.libra.model.entity.ConnectionTypes;
 import com.spring.libra.model.entity.Pos;
 import com.spring.libra.repository.PosRepository;
+import com.spring.libra.ui.context.PositionsContextMenu;
 import com.spring.libra.ui.editor.CityEditor;
 import com.spring.libra.ui.editor.PosEditor;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
@@ -107,7 +108,9 @@ public class PositionsView extends VerticalLayout {
     spacing.setHeight("50px");
     spacing.setAlignItems(Alignment.CENTER);
 
-    add(header, spacing, toggleButton, actions, grid, editor, cityEditor);
+    PositionsContextMenu contextMenu = new PositionsContextMenu(grid, editor, repo);
+
+    add(header, spacing, toggleButton, actions, grid, contextMenu, editor, cityEditor);
 
     setupGrid();
 
