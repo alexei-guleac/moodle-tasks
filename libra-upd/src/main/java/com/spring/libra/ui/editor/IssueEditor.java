@@ -288,10 +288,13 @@ public class IssueEditor extends VerticalLayout implements KeyNotifier {
   }
 
   void delete() {
+    final Long issuesId = issues.getId();
+    final int notifications = notificationRepository.deleteNotificationsByIssueId(issuesId);
+    System.out.println("DELETED " + notifications + " issuesId " + issuesId);
     repository.delete(issues);
 
     com.vaadin.flow.component.notification.Notification notify = com.vaadin.flow.component.notification.Notification
-        .show("Issue with id # " + issues.getId() + " deleted", DEFAULT_SHOW_TIME,
+        .show("Issue with id # " + issuesId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 

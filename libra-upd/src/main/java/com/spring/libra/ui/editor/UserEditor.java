@@ -189,10 +189,11 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
   }
 
   void delete() {
+    final Long userId = user.getId();
     repository.delete(user);
 
     Notification notify = Notification
-        .show("User with id # " + user.getId() + " deleted", DEFAULT_SHOW_TIME,
+        .show("User with id # " + userId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 

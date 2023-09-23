@@ -250,10 +250,11 @@ public class PosEditor extends VerticalLayout implements KeyNotifier {
   }
 
   void delete() {
+    final Long posId = pos.getId();
     repository.delete(pos);
 
     Notification notify = Notification
-        .show("Position with id # " + pos.getId() + " deleted", DEFAULT_SHOW_TIME,
+        .show("Position with id # " + posId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 

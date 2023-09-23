@@ -103,10 +103,11 @@ public class CityEditor extends VerticalLayout implements KeyNotifier {
   }
 
   void delete() {
+    final Long cityId = city.getId();
     repository.delete(city);
 
     Notification notify = Notification
-        .show("City with id # " + city.getId() + " deleted", DEFAULT_SHOW_TIME,
+        .show("City with id # " + cityId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
