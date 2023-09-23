@@ -127,8 +127,9 @@ public class UsersView extends VerticalLayout {
   private void setupGrid() {
     grid.setHeight("500px");
     grid.setColumns("id", "name", "login", "email", "telephone");
-    grid.getColumnByKey("id").setWidth("60px").
-        setFlexGrow(0);
+    grid.getColumnByKey("id").setAutoWidth(true).setFlexGrow(0).setFrozen(true);
+    grid.getColumnByKey("login").setAutoWidth(true).setFlexGrow(0);
+    grid.getColumnByKey("telephone").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
     // Sets the max number of items to be rendered on the grid for each page

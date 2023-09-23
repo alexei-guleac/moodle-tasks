@@ -12,8 +12,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,6 +26,7 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
@@ -148,10 +152,11 @@ public class PositionsView extends VerticalLayout {
     grid.setHeight("500px");
     grid.setColumns("id", "posName", "telephone", "cityId", "model", "brand",
         "daysClosed", "insertDate");
-    grid.getColumnByKey("id").setWidth("60px").
-        setFlexGrow(0);
+    grid.getColumnByKey("id").setAutoWidth(true).setFlexGrow(0).setFrozen(true);
+    grid.getColumnByKey("telephone").setAutoWidth(true).setFlexGrow(0);
+    grid.getColumnByKey("daysClosed").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-    
+
     // Sets the max number of items to be rendered on the grid for each page
     grid.setPageSize(10);
     // Sets how many pages should be visible on the pagination before and/or after the current selected page

@@ -90,8 +90,9 @@ public class MyIssuesView extends VerticalLayout {
     grid.setHeight("500px");
     grid.setColumns("id", "posId", "issueTypeId", "problemId", "priority", "assignedId",
         "description", "creationDate");
-    grid.getColumnByKey("id").setWidth("60px").
-        setFlexGrow(0);
+    grid.getColumnByKey("id").setAutoWidth(true).setFlexGrow(0).setFrozen(true);
+    grid.getColumnByKey("problemId").setAutoWidth(true).setFlexGrow(0);
+    grid.getColumnByKey("priority").setAutoWidth(true).setFlexGrow(0);
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
     // Sets the max number of items to be rendered on the grid for each page
