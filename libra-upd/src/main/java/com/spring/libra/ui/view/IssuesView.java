@@ -63,6 +63,8 @@ public class IssuesView extends VerticalLayout {
 
   private final Button goToPositions;
 
+  private final Button goToIndex;
+
   private final IssueEditor editor;
 
   private final SecurityService securityService;
@@ -100,11 +102,17 @@ public class IssuesView extends VerticalLayout {
         goToPositions.getUI().ifPresent(ui ->
             ui.navigate(Routes.POSITIONS))
     );
+    this.goToIndex = new Button("./");
+    goToIndex.addClickListener(e ->
+        goToIndex.getUI().ifPresent(ui ->
+            ui.navigate(Routes.INDEX))
+    );
 
     VerticalLayout header = getVerticalLayoutHeader(securityService);
 
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, goToUsers, goToPositions);
+    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, goToUsers, goToPositions,
+        goToIndex);
 
     Text space = new Text("       ");
     Text text = new Text("Issue management");

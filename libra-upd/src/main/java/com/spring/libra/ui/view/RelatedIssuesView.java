@@ -6,9 +6,8 @@ import static com.spring.libra.ui.view.IssuesView.showDetails;
 import com.spring.libra.config.security.SecurityService;
 import com.spring.libra.constants.Routes;
 import com.spring.libra.model.entity.Issue;
-import com.spring.libra.model.entity.User;
 import com.spring.libra.repository.IssueRepository;
-import com.spring.libra.repository.UserRepository;
+import com.spring.libra.repository.PosRepository;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -21,17 +20,18 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-@Route(value = Routes.MY_ISSUES)
-public class MyIssuesView extends VerticalLayout {
+@Route(value = Routes.POSITION_ISSUES + "/:posID")
+public class RelatedIssuesView extends VerticalLayout implements BeforeEnterObserver {
 
   final PaginatedGrid<Issue> grid;
 
@@ -39,16 +39,17 @@ public class MyIssuesView extends VerticalLayout {
 
   private final IssueRepository repo;
 
-  private final UserRepository userRepository;
+  private final PosRepository posRepository;
 
   private final SecurityService securityService;
-
+  private final Button goToPositions;
   private final Button goToIndex;
+  private String routeParameter;
 
-  public MyIssuesView(IssueRepository repo,
-      UserRepository userRepository,
+  public RelatedIssuesView(IssueRepository repo,
+      PosRepository posRepository,
       @Autowired SecurityService securityService) {
-    this.userRepository = userRepository;
+    this.posRepository = posRepository;
     this.securityService = securityService;
     this.repo = repo;
     this.grid = new PaginatedGrid<>(Issue.class);
@@ -63,6 +64,12 @@ public class MyIssuesView extends VerticalLayout {
         themeList.add(Lumo.DARK);
       }
     });
+
+    this.goToPositions = new Button("Go To Positions");
+    goToPositions.addClickListener(e ->
+        goToPositions.getUI().ifPresent(ui ->
+            ui.navigate(Routes.POSITIONS))
+    );
     this.goToIndex = new Button("./");
     goToIndex.addClickListener(e ->
         goToIndex.getUI().ifPresent(ui ->
@@ -96,10 +103,14 @@ public class MyIssuesView extends VerticalLayout {
         (e -> listUserIssues(e.getValue()));
 
     grid.asSingleSelect().addValueChangeListener(showDetails());
-
-    // Initialize listing
-    listUserIssues(null);
   }
+
+//  @Override
+//  public void setParameter(BeforeEvent event,
+//      @WildcardParameter String parameter) {
+//    System.out.println("obtainded " + parameter);
+//    routeParameter = parameter;
+//  }
 
   private void setupGrid() {
     grid.setHeight(DEFAULT_GRID_HEIGHT);
@@ -170,19 +181,24 @@ public class MyIssuesView extends VerticalLayout {
   }
 
   void listUserIssues(String filterText) {
-
-    if (securityService.getAuthenticatedUser() != null) {
-      final String username = securityService.getAuthenticatedUser().getUsername();
-      User user = userRepository.findByLogin(username)
-          .orElseThrow(() -> new UsernameNotFoundException(
-              "User Not Found with username: " + username));
+    if (routeParameter != null) {
+      final Long posId = Long.parseLong(routeParameter);
 
       if (StringUtils.isEmpty(filterText)) {
-        grid.setItems(repo.findByAssignedId(user));
+        grid.setItems(repo.findByPosId(posRepository.findById(posId).get()));
       } else {
         grid.setItems(repo.
-            findByAssignedIdAndDescriptionStartsWithIgnoreCase(user, filterText));
+            findByPosIdAndDescriptionStartsWithIgnoreCase(posRepository.findById(posId).get(),
+                filterText));
       }
     }
+  }
+
+  @Override
+  public void beforeEnter(BeforeEnterEvent event) {
+    routeParameter = event.getRouteParameters().get("posID").get();
+
+    // Initialize listing
+    listUserIssues(null);
   }
 }

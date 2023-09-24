@@ -1,8 +1,10 @@
 package com.spring.libra.ui.context;
 
+import com.spring.libra.constants.Routes;
 import com.spring.libra.model.entity.Pos;
 import com.spring.libra.repository.PosRepository;
 import com.spring.libra.ui.editor.PosEditor;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
@@ -36,6 +38,9 @@ public class PositionsContextMenu extends GridContextMenu<Pos> {
       deleteDialog.setConfirmButtonTheme("primary error");
       deleteDialog.addConfirmListener(event -> posRepository.delete(pos));
       deleteDialog.open();
+    }));
+    addItem("Go to issues", e -> e.getItem().ifPresent(pos -> {
+      UI.getCurrent().navigate(Routes.POSITION_ISSUES + "/" + pos.getId());
     }));
 
     add(new Hr());

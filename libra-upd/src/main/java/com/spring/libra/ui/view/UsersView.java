@@ -53,6 +53,8 @@ public class UsersView extends VerticalLayout {
 
   private final Button goToIssues;
 
+  private final Button goToIndex;
+
   private final UserEditor editor;
 
   private final SecurityService securityService;
@@ -86,12 +88,17 @@ public class UsersView extends VerticalLayout {
         goToIssues.getUI().ifPresent(ui ->
             ui.navigate(Routes.ISSUES))
     );
+    this.goToIndex = new Button("./");
+    goToIndex.addClickListener(e ->
+        goToIndex.getUI().ifPresent(ui ->
+            ui.navigate(Routes.INDEX))
+    );
 
     // Logo text
     VerticalLayout header = getVerticalLayoutForHeader(securityService);
 
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filterEmail, addNewBtn, goToIssues);
+    HorizontalLayout actions = new HorizontalLayout(filterEmail, addNewBtn, goToIssues, goToIndex);
 
     Text space = new Text("       ");
     Text text = new Text("User management");

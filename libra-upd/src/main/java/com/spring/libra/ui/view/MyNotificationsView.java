@@ -50,6 +50,8 @@ public class MyNotificationsView extends VerticalLayout {
 
   private final SecurityService securityService;
 
+  private final Button goToIndex;
+
   public MyNotificationsView(NotificationRepository repo,
       UserRepository userRepository,
       @Autowired SecurityService securityService) {
@@ -68,11 +70,16 @@ public class MyNotificationsView extends VerticalLayout {
         themeList.add(Lumo.DARK);
       }
     });
+    this.goToIndex = new Button("./");
+    goToIndex.addClickListener(e ->
+        goToIndex.getUI().ifPresent(ui ->
+            ui.navigate(Routes.INDEX))
+    );
 
     VerticalLayout header = getVerticalLayoutHeader(securityService);
 
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filter);
+    HorizontalLayout actions = new HorizontalLayout(filter, goToIndex);
 
     Text space = new Text("       ");
     Text text = new Text("My notifications");

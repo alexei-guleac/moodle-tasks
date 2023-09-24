@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
-@Route(value = "/")
+@Route(value = Routes.INDEX)
 public class IndexView extends VerticalLayout {
 
   private final SecurityService securityService;

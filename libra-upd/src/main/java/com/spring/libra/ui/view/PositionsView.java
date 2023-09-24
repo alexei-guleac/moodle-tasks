@@ -62,6 +62,8 @@ public class PositionsView extends VerticalLayout {
 
   private final Button goToIssues;
 
+  private final Button goToIndex;
+
   private final PosEditor editor;
 
   private final CityEditor cityEditor;
@@ -100,11 +102,17 @@ public class PositionsView extends VerticalLayout {
         goToIssues.getUI().ifPresent(ui ->
             ui.navigate(Routes.ISSUES))
     );
+    this.goToIndex = new Button("./");
+    goToIndex.addClickListener(e ->
+        goToIndex.getUI().ifPresent(ui ->
+            ui.navigate(Routes.INDEX))
+    );
 
     VerticalLayout header = getVerticalLayoutHeader(securityService);
 
     // build layout
-    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, addNewCityBtn, goToIssues);
+    HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn, addNewCityBtn, goToIssues,
+        goToIndex);
 
     Text space = new Text("       ");
     Text text = new Text("Position management");
