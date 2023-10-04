@@ -28,8 +28,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     login.setOpened(true);
     login.setAction("login");
-    login.setTitle("Libra");
-    login.setDescription("Issue tracker");
+    login.setTitle("Documentale");
+    login.setDescription("Project");
 
     addActionForRegistrationButton();
 

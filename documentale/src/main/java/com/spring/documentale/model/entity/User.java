@@ -58,8 +58,8 @@ public class User {
   private boolean isEnabled;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_type_id")
-  private UserRole userTypeId;
+  @JoinColumn(name = "user_role_id")
+  private UserRole userRoleId;
 
   public User withId(Long id) {
     this.id = id;
@@ -70,7 +70,7 @@ public class User {
   public String toString() {
     return "" + name + 
         ", " + email +
-        ", " + userTypeId;
+        ", " + userRoleId;
   }
 }
 

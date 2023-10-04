@@ -81,7 +81,7 @@ create table dm_users_details
     patronymic       varchar2(255 char),
     surname          varchar2(255 char),
     institution_id   number(19, 0),
-    user_type_id     number(19, 0),
+    user_role_id     number(19, 0),
     primary key (id)
 );
 
