@@ -7,10 +7,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import com.spring.documentale.config.security.SecurityService;
 import com.spring.documentale.constants.Routes;
-import com.spring.documentale.model.entity.User;
-import com.spring.documentale.model.entity.UserRole;
-import com.spring.documentale.repository.UserRepository;
-import com.spring.documentale.ui.editor.UserEditor;
+import com.spring.documentale.model.entity.Institution;
+import com.spring.documentale.repository.InstitutionRepository;
+import com.spring.documentale.ui.editor.InstitutionEditor;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -30,36 +29,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.vaadin.klaudeta.PaginatedGrid;
 
-@Route(value = Routes.USERS, layout = AdministratorView.class)
-//@ParentLayout(AdministratorView.class)
-public class UsersView extends VerticalLayout {
+@Route(value = Routes.INSTITUTIONS, layout = AdministratorView.class)
+public class InstitutionsView extends VerticalLayout {
 
-  final PaginatedGrid<User> grid;
+  final PaginatedGrid<Institution> grid;
 
   final TextField filterEmail;
 
-  private final UserRepository repo;
+  private final InstitutionRepository repo;
 
   private final Button addNewBtn;
 
   private final Button goToIndex;
 
-  private final UserEditor editor;
+  private final InstitutionEditor editor;
 
   private final SecurityService securityService;
 
   private final Map<Column<?>, String> toggleableColumns = new HashMap<>();
 
 
-  public UsersView(UserRepository repo, UserEditor editor,
+  public InstitutionsView(InstitutionRepository repo, InstitutionEditor editor,
       @Autowired SecurityService securityService) {
     this.securityService = securityService;
     this.repo = repo;
     this.editor = editor;
-    this.grid = new PaginatedGrid<>(User.class);
+    this.grid = new PaginatedGrid<>(Institution.class);
 
     this.filterEmail = new TextField();
-    this.addNewBtn = new Button("Add User", VaadinIcon.PLUS.create());
+    this.addNewBtn = new Button("Add Institution", VaadinIcon.PLUS.create());
     addNewBtn.addThemeVariants
         (ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 
@@ -85,14 +83,14 @@ public class UsersView extends VerticalLayout {
 
     setupGrid();
 
-    filterEmail.setPlaceholder("Filter by email");
+    filterEmail.setPlaceholder("Filter by name");
 
     // Hook logic to components
         /* Replace listing with filtered content when user
           changes filter*/
     filterEmail.setValueChangeMode(ValueChangeMode.EAGER);
     filterEmail.addValueChangeListener
-        (e -> listUsers(e.getValue()));
+        (e -> listInstitutions(e.getValue()));
 
 
         /* Instantiate and edit new
@@ -105,32 +103,32 @@ public class UsersView extends VerticalLayout {
     // refresh data from backend
     editor.setChangeHandler(() -> {
       editor.setVisible(false);
-      listUsers(filterEmail.getValue());
+      listInstitutions(filterEmail.getValue());
     });
 
     // Initialize listing
-    listUsers(null);
+    listInstitutions(null);
   }
 
 
-  private void addNewButton(UserEditor editor) {
-    addNewBtn.addClickListener(e -> editor.editUser
-        (new User(null, null, "", "", "", "", "", "", "", false, new UserRole())));
+  private void addNewButton(InstitutionEditor editor) {
+    addNewBtn.addClickListener(e -> editor.editInstitution(
+        (new Institution(null, "", "", ""))));
   }
 
   private void setupGrid() {
     grid.setHeight(DEFAULT_GRID_HEIGHT);
-    grid.setColumns("id", "name", "login", "email", "userRoleId", "surname");
+    grid.setColumns("id", "name", "code", "additionalInfo");
     grid.getColumnByKey("id").setAutoWidth(true).setFlexGrow(0).setFrozen(true);
-    grid.getColumnByKey("login").setAutoWidth(true).setFlexGrow(0);
+    grid.getColumnByKey("code").setAutoWidth(true).setFlexGrow(0);
 
     grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
     final String edit = "Edit";
-    final Column<User> column = grid.addComponentColumn(t -> {
+    final Column<Institution> column = grid.addComponentColumn(t -> {
       Button editButton = new Button(edit);
       editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-      editButton.addClickListener(click -> editor.editUser(t));
+      editButton.addClickListener(click -> editor.editInstitution(t));
       return editButton;
     }).setWidth("auto").setFlexGrow(0);
     column.setHeader(edit);
@@ -142,7 +140,7 @@ public class UsersView extends VerticalLayout {
             toggleableColumns.put(userColumn, key);
           }
         });
-    Column<User> settingColumn = grid.addColumn(box -> "").setWidth("auto").setFlexGrow(0);
+    Column<Institution> settingColumn = grid.addColumn(box -> "").setWidth("auto").setFlexGrow(0);
     grid.getHeaderRows().get(0).getCell(settingColumn)
         .setComponent(createMenuToggle(toggleableColumns));
 
@@ -152,12 +150,12 @@ public class UsersView extends VerticalLayout {
     grid.setPaginatorSize(5);
   }
 
-  void listUsers(String filterText) {
+  void listInstitutions(String filterText) {
     if (StringUtils.isEmpty(filterText)) {
       grid.setItems(repo.findAll());
     } else {
       grid.setItems(repo.
-          findByEmailStartsWithIgnoreCase(filterText));
+          findByNameStartsWithIgnoreCase(filterText));
     }
   }
 }
