@@ -35,7 +35,15 @@ public class Institution {
   @Column(name = "additional_info")
   private String additionalInfo;
 
+  public Institution withId(Long id) {
+    this.id = id;
+    return this;
+  }
 
+  public Institution withName(String name) {
+    this.name = name;
+    return this;
+  }
 }
 
 

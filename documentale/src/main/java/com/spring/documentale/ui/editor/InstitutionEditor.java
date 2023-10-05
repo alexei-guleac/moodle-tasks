@@ -31,7 +31,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
   private final InstitutionRepository repository;
 
   /* Fields to edit properties in User entity */
-  TextField institutionName = new TextField("Name");
+  TextField name = new TextField("Name");
   TextField code = new TextField("Code");
   TextField additionalInfo = new TextField("Additional Info");
 
@@ -53,7 +53,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
 
     setupFields();
 
-    VerticalLayout spacing = new VerticalLayout(institutionName, code, additionalInfo, actions);
+    VerticalLayout spacing = new VerticalLayout(name, code, additionalInfo, actions);
     spacing.setSpacing(true);
     spacing.setAlignItems(Alignment.CENTER);
 
@@ -98,11 +98,11 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
 
   private void setupFields() {
 
-    institutionName.setRequired(true);
-    institutionName.setWidthFull();
-    institutionName.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
-    institutionName.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
-    institutionName.setClearButtonVisible(true);
+    name.setRequired(true);
+    name.setWidthFull();
+    name.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    name.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    name.setClearButtonVisible(true);
 
     code.setRequired(true);
     code.setWidthFull();
@@ -162,7 +162,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
     setVisible(true);
 
     // Focus first name initially
-    institutionName.focus();
+    name.focus();
   }
 
   public void setChangeHandler(ChangeHandler h) {

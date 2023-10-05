@@ -5,14 +5,17 @@ import static com.spring.documentale.constants.ElementsSize.DEFAULT_FORM_MAX_WID
 import static com.spring.documentale.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
 import static com.spring.documentale.constants.Notifications.DEFAULT_SHOW_TIME;
 
+import com.spring.documentale.model.entity.Institution;
 import com.spring.documentale.model.entity.User;
 import com.spring.documentale.model.entity.UserRole;
+import com.spring.documentale.repository.InstitutionRepository;
 import com.spring.documentale.repository.UserRepository;
 import com.spring.documentale.repository.UserRolesRepository;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -25,7 +28,6 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +44,22 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
   private final UserRolesRepository userTypesRepository;
 
+  private final InstitutionRepository institutionRepository;
+
   /* Fields to edit properties in User entity */
   TextField name = new TextField("Name");
   EmailField email = new EmailField("Email");
   TextField login = new TextField("Login");
   PasswordField password = new PasswordField("Password");
-  TextField telephone = new TextField("Telephone");
-  ComboBox<UserRole> userTypesComboBox = new ComboBox<>("User Type");
+
+  TextField surname = new TextField("Surname");
+  TextField patronymic = new TextField("Patronymic");
+
+  Checkbox isEnabled = new Checkbox("Is enabled");
+
+  ComboBox<UserRole> userRolesComboBox = new ComboBox<>("User Role");
+  ComboBox<Institution> institutionComboBox = new ComboBox<>("Institution");
+
 
   /* Action buttons */
   Button save = new Button("Save", VaadinIcon.CHECK.create());
@@ -64,15 +75,18 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
   @Autowired
   public UserEditor(PasswordEncoder passwordEncoder,
-      UserRepository repository, UserRolesRepository userTypesRepository) {
+      UserRepository repository, UserRolesRepository userTypesRepository,
+      InstitutionRepository institutionRepository) {
     this.passwordEncoder = passwordEncoder;
     this.repository = repository;
     this.userTypesRepository = userTypesRepository;
+    this.institutionRepository = institutionRepository;
 
-    setupFields(userTypesRepository);
+    setupFields(userTypesRepository, institutionRepository);
 
-    VerticalLayout spacing = new VerticalLayout(name, email, login, password, telephone,
-        userTypesComboBox,
+    VerticalLayout spacing = new VerticalLayout(name, institutionComboBox, email, login, password,
+        surname, patronymic, isEnabled,
+        userRolesComboBox,
         actions);
     spacing.setSpacing(true);
     spacing.setAlignItems(Alignment.CENTER);
@@ -100,7 +114,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     ConfirmDialog saveDialog = new ConfirmDialog();
 
     saveDialog.setHeader("Save user");
- 
+
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -127,7 +141,8 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
   }
 
-  private void setupFields(UserRolesRepository userTypesRepository) {
+  private void setupFields(UserRolesRepository userTypesRepository,
+      InstitutionRepository institutionRepository) {
     name.setRequired(true);
     name.setWidthFull();
     name.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
@@ -158,19 +173,33 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     password.setMaxLength(12);
     password.setClearButtonVisible(true);
 
-    telephone.setRequired(true);
-    telephone.setWidthFull();
-    telephone.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
-    telephone.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
-    telephone.setClearButtonVisible(true);
+    surname.setRequired(true);
+    surname.setWidthFull();
+    surname.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    surname.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    surname.setClearButtonVisible(true);
 
-    userTypesComboBox.setWidthFull();
-    userTypesComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
-    userTypesComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
-    userTypesComboBox.setRequired(true);
-    userTypesComboBox.setItems(userTypesRepository.findAll());
-    userTypesComboBox.setItemLabelGenerator(userTypes -> userTypes.getRole().name());
-    userTypesComboBox.addValueChangeListener(this::setType);
+    patronymic.setRequired(true);
+    patronymic.setWidthFull();
+    patronymic.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    patronymic.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    patronymic.setClearButtonVisible(true);
+
+    userRolesComboBox.setWidthFull();
+    userRolesComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    userRolesComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    userRolesComboBox.setRequired(true);
+    userRolesComboBox.setItems(userTypesRepository.findAll());
+    userRolesComboBox.setItemLabelGenerator(userTypes -> userTypes.getRole().name());
+    userRolesComboBox.addValueChangeListener(this::setType);
+
+    institutionComboBox.setWidthFull();
+    institutionComboBox.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    institutionComboBox.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+    institutionComboBox.setRequired(true);
+    institutionComboBox.setItems(institutionRepository.findAll());
+    institutionComboBox.setItemLabelGenerator(Institution::getName);
+    institutionComboBox.addValueChangeListener(this::setInstitution);
   }
 
   private void setPasswordValue(ComponentValueChangeEvent<PasswordField, String> listener) {
@@ -185,6 +214,15 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
     if (value != null) {
       this.user
           .setUserRoleId(userTypesRepository.findByRole(value.getRole()).get());
+    }
+  }
+
+  private void setInstitution(
+      ComponentValueChangeEvent<ComboBox<Institution>, Institution> listener) {
+    Institution value = listener.getValue();
+    if (value != null) {
+      this.user
+          .setInstitutionId(new Institution().withId(value.getId()));
     }
   }
 
@@ -221,14 +259,19 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
       // Find fresh entity for editing
       user = repository.findById(usr.getId()).get();
 
-      userTypesComboBox.setValue(new UserRole()
+      institutionComboBox.setValue(new Institution()
+          .withId(user.getInstitutionId().getId())
+          .withName(user.getInstitutionId().getName()));
+
+      userRolesComboBox.setValue(new UserRole()
           .withId(user.getUserRoleId().getId())
           .withRole(user.getUserRoleId().getRole()));
 
     } else {
       user = usr;
 
-      userTypesComboBox.setValue(null);
+      institutionComboBox.setValue(null);
+      userRolesComboBox.setValue(null);
     }
     cancel.setVisible(persisted);
         /* Bind user properties to similarly named fields

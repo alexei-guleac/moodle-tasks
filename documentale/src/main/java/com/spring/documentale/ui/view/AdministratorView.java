@@ -31,7 +31,7 @@ public class AdministratorView extends VerticalLayout implements RouterLayout {
 
     Tabs tabs = getTabs();
 
-    UI.getCurrent().navigate(UsersView.class);
+    UI.getCurrent().navigate(InstitutionsView.class);
     tabs.addSelectedChangeListener(
         e -> UI.getCurrent().navigate(tabToUrlMap.get(e.getSelectedTab())));
 
@@ -39,7 +39,7 @@ public class AdministratorView extends VerticalLayout implements RouterLayout {
     VerticalLayout header = getVerticalLayoutForHeader(securityService);
 
     Text space = new Text("       ");
-    Text text = new Text("User management");
+    Text text = new Text("Administration management");
 
     VerticalLayout spacing = new VerticalLayout(space, text);
     spacing.setSpacing(true);
