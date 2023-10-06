@@ -52,6 +52,23 @@ public class Project {
 
   @Column(name = "is_active")
   private Boolean isActive;
+
+  public Project withId(Long id) {
+    this.id = id;
+    return this;
+  }
+
+  public Project withName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return name +
+        ", " + userCreatedId +
+        ", " + dateFrom;
+  }
 }
 
 

@@ -44,6 +44,12 @@ public class Institution {
     this.name = name;
     return this;
   }
+
+  @Override
+  public String toString() {
+    return name +
+        ", " + code;
+  }
 }
 
 

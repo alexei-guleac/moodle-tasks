@@ -44,6 +44,22 @@ public class DocumentTypes {
 
   @Column(name = "is_date_grouped")
   private Boolean isDateGrouped;
+
+  public DocumentTypes withId(Long id) {
+    this.id = id;
+    return this;
+  }
+
+  public DocumentTypes withDocTypeName(DocumentType name) {
+    this.name = name;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return name +
+        ", " + code;
+  }
 }
 
 
