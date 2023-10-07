@@ -85,11 +85,6 @@ create table dm_users_details
     primary key (id)
 );
 
-alter table dm_document_type_ierarchy
-    add constraint FKgmhyj7ny8jyv894mxw2t4l91x foreign key (id_macro) references dm_documents;
-
-alter table dm_document_type_ierarchy
-    add constraint FK4qwn6ppw7feo7xc6g19mtu55q foreign key (id_micro) references dm_documents;
 
 alter table dm_documents
     add constraint FKd16pqhsdcv3r0jwquwo3qjwyd foreign key (document_types_id) references dm_document_types;

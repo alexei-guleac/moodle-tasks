@@ -99,7 +99,7 @@ public class ProjectsEditor extends VerticalLayout implements KeyNotifier {
   private void addActionButtons() {
 
     ConfirmDialog saveDialog = new ConfirmDialog();
-    saveDialog.setHeader("Save institution");
+    saveDialog.setHeader("Save project");
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -107,8 +107,8 @@ public class ProjectsEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
-    deleteDialog.setHeader("Delete institution");
-    deleteDialog.setText("Do you want to delete entity?");
+    deleteDialog.setHeader("Delete project");
+    deleteDialog.setText("Do you want to delete project?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
     deleteDialog.setConfirmButtonTheme("primary error");

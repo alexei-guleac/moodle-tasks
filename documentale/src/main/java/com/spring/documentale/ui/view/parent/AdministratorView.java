@@ -1,8 +1,10 @@
-package com.spring.documentale.ui.view;
+package com.spring.documentale.ui.view.parent;
 
 
 import com.spring.documentale.config.security.SecurityService;
 import com.spring.documentale.constants.Routes;
+import com.spring.documentale.ui.view.editable.InstitutionsView;
+import com.spring.documentale.ui.view.editable.UsersView;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -19,19 +21,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-@Route(value = Routes.OPERATOR_CEDACRI)
-public class CedOperatorView extends VerticalLayout implements RouterLayout {
+@Route(value = Routes.ADMINISTRATION)
+public class AdministratorView extends VerticalLayout implements RouterLayout {
 
   private final Map<Tab, String> tabToUrlMap = new LinkedHashMap<>();
 
   private final SecurityService securityService;
 
-  public CedOperatorView(@Autowired SecurityService securityService) {
+  public AdministratorView(@Autowired SecurityService securityService) {
     this.securityService = securityService;
 
     Tabs tabs = getTabs();
 
-    UI.getCurrent().navigate(DocumentsView.class);
+    UI.getCurrent().navigate(InstitutionsView.class);
     tabs.addSelectedChangeListener(
         e -> UI.getCurrent().navigate(tabToUrlMap.get(e.getSelectedTab())));
 
@@ -39,7 +41,7 @@ public class CedOperatorView extends VerticalLayout implements RouterLayout {
     VerticalLayout header = getVerticalLayoutForHeader(securityService);
 
     Text space = new Text("       ");
-    Text text = new Text("Operator Cedacri management");
+    Text text = new Text("Administration management");
 
     VerticalLayout spacing = new VerticalLayout(space, text);
     spacing.setSpacing(true);
@@ -94,8 +96,8 @@ public class CedOperatorView extends VerticalLayout implements RouterLayout {
 
     RouteConfiguration routeConfiguration = RouteConfiguration.forApplicationScope();
 
-    tabToUrlMap.put(new Tab("Documents"), routeConfiguration.getUrl(DocumentsView.class));
-    tabToUrlMap.put(new Tab("Projects"), routeConfiguration.getUrl(ProjectsView.class));
+    tabToUrlMap.put(new Tab("Institutions"), routeConfiguration.getUrl(InstitutionsView.class));
+    tabToUrlMap.put(new Tab("Users"), routeConfiguration.getUrl(UsersView.class));
 
     //code for rest tabs
     Tabs tabs = new Tabs(tabToUrlMap.keySet().toArray(new Tab[]{}));

@@ -125,7 +125,7 @@ public class UserEditor extends VerticalLayout implements KeyNotifier {
 
     deleteDialog.setHeader("Delete user");
 
-    deleteDialog.setText("Do you want to delete entity?");
+    deleteDialog.setText("Do you want to delete user?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
     deleteDialog.setConfirmButtonTheme("primary error");

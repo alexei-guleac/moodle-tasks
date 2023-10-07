@@ -29,13 +29,12 @@ public class DocumentTypeIerarchy {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "id_macro")
-  private Documents idMacro;
+  @Column(name = "id_macro")
+  private Long idMacro;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "id_micro")
-  private Documents idMicro;
+  @Column(name = "id_micro")
+  private Long idMicro;
+
 }
 
 

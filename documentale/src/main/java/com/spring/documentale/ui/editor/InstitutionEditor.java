@@ -81,7 +81,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
     deleteDialog.setHeader("Delete institution");
-    deleteDialog.setText("Do you want to delete entity?");
+    deleteDialog.setText("Do you want to delete institution?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
     deleteDialog.setConfirmButtonTheme("primary error");

@@ -124,7 +124,7 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
   private void addActionButtons() {
 
     ConfirmDialog saveDialog = new ConfirmDialog();
-    saveDialog.setHeader("Save institution");
+    saveDialog.setHeader("Save document");
     saveDialog.setText("Do you want to save your changes?");
     saveDialog.setCancelable(true);
     saveDialog.setConfirmText("Save");
@@ -132,8 +132,8 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
     saveDialog.addConfirmListener(e -> save());
 
     ConfirmDialog deleteDialog = new ConfirmDialog();
-    deleteDialog.setHeader("Delete institution");
-    deleteDialog.setText("Do you want to delete entity?");
+    deleteDialog.setHeader("Delete document");
+    deleteDialog.setText("Do you want to delete document?");
     deleteDialog.setCancelable(true);
     deleteDialog.setConfirmText("Delete");
     deleteDialog.setConfirmButtonTheme("primary error");

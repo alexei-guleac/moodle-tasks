@@ -13,4 +13,6 @@ public class ElementsSize {
   public static final String DEFAULT_FORM_MIN_WIDTH = "100px";
 
   public static final String DEFAULT_GRID_HEIGHT = "480px";
+
+  public static final String SHORT_GRID_HEIGHT = "450px";
 }
