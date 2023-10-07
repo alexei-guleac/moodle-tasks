@@ -4,6 +4,7 @@ package com.spring.documentale.ui.editor;
 import static com.spring.documentale.constants.ElementsSize.DEFAULT_FORM_MAX_WIDTH;
 import static com.spring.documentale.constants.ElementsSize.DEFAULT_FORM_MIN_WIDTH;
 import static com.spring.documentale.constants.Notifications.DEFAULT_SHOW_TIME;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.spring.documentale.model.entity.DocumentTypes;
 import com.spring.documentale.model.entity.Documents;
@@ -20,6 +21,7 @@ import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -29,12 +31,21 @@ import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -55,7 +66,7 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
   /* Fields to edit properties in User entity */
   TextField name = new TextField("Name");
   TextField savedPath = new TextField("Saved Path");
-  TextField additionalInfo = new TextField("Additional Info");
+  TextArea additionalInfo = new TextArea("Additional Info");
 
   ComboBox<Institution> institutionComboBox = new ComboBox<>("Institution");
   ComboBox<User> userCreatedComboBox = new ComboBox<>("User created");
@@ -63,6 +74,9 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
   ComboBox<Project> projectComboBox = new ComboBox<>("Project");
 
   DateTimePicker groupingDate = new DateTimePicker();
+
+  MultiFileMemoryBuffer multiFileMemoryBuffer = new MultiFileMemoryBuffer();
+  Upload upload = new Upload(multiFileMemoryBuffer);
 
   /* Action buttons */
   Button save = new Button("Save", VaadinIcon.CHECK.create());
@@ -90,7 +104,7 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
 
     setupFields();
 
-    VerticalLayout spacing = new VerticalLayout(name, savedPath, institutionComboBox,
+    VerticalLayout spacing = new VerticalLayout(name, upload, savedPath, institutionComboBox,
         userCreatedComboBox, documentTypesComboBox, projectComboBox, groupingDate, additionalInfo,
         actions);
     spacing.setSpacing(true);
@@ -137,6 +151,58 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
 
   private void setupFields() {
 
+    Button uploadButton = new Button("Upload Doc...");
+    uploadButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    upload.setUploadButton(uploadButton);
+    upload.setDropAllowed(true);
+    upload.setMaxFiles(1);
+    int maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
+    upload.setMaxFileSize(maxFileSizeInBytes);
+    upload.setWidthFull();
+    upload.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
+    upload.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
+
+    // Disable the upload button after the file is selected
+    // Re-enable the upload button after the file is cleared
+    upload.getElement().addEventListener("max-files-reached-changed", event -> {
+      boolean maxFilesReached = event.getEventData().getBoolean("event.detail.value");
+      uploadButton.setEnabled(!maxFilesReached);
+    }).addEventData("event.detail.value");
+    uploadButton.setEnabled(isBlank(savedPath.getValue()));
+
+    upload.addSucceededListener(event -> {
+      // Determine which file was uploaded
+      final String fileName = event.getFileName();
+      final String pathname = "src/main/resources/documents_data/" + fileName;
+      File targetFile = new File(pathname);
+
+      // Get input stream specifically for the finished file
+      InputStream multiFileInputStream = multiFileMemoryBuffer.getInputStream(fileName);
+      long contentLength = event.getContentLength();
+      String mimeType = event.getMIMEType();
+
+      // Do something with the file data
+      try {
+        java.nio.file.Files.copy(
+            multiFileInputStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        savedPath.setValue(pathname);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      IOUtils.closeQuietly(multiFileInputStream);
+    });
+    upload.addFileRejectedListener(event -> {
+      String errorMessage = event.getErrorMessage();
+
+      Notification notification = Notification.show(
+          errorMessage,
+          5000,
+          Position.BOTTOM_END
+      );
+      notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+    });
+
     name.setRequired(true);
     name.setWidthFull();
     name.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
@@ -148,6 +214,7 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
     savedPath.setMaxWidth(DEFAULT_FORM_MAX_WIDTH);
     savedPath.setMinWidth(DEFAULT_FORM_MIN_WIDTH);
     savedPath.setClearButtonVisible(true);
+    savedPath.setReadOnly(true);
 
     additionalInfo.setRequired(true);
     additionalInfo.setWidthFull();
@@ -241,8 +308,12 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
     final Long institutionId = documents.getId();
     repository.delete(documents);
 
+    File fileToDelete = FileUtils.getFile(savedPath.getValue());
+    boolean success = FileUtils.deleteQuietly(fileToDelete);
+    System.out.println("File " + savedPath.getValue() + " deleted " + success);
+
     Notification notify = Notification
-        .show("City with id # " + institutionId + " deleted", DEFAULT_SHOW_TIME,
+        .show("Document with id # " + institutionId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
@@ -258,7 +329,7 @@ public class DocumentsEditor extends VerticalLayout implements KeyNotifier {
     repository.save(documents);
 
     Notification notify = Notification
-        .show("City with name " + documents.getName() + " saved", DEFAULT_SHOW_TIME,
+        .show("Document with name " + documents.getName() + " saved", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 

@@ -17,6 +17,7 @@ import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -33,7 +34,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
   /* Fields to edit properties in User entity */
   TextField name = new TextField("Name");
   TextField code = new TextField("Code");
-  TextField additionalInfo = new TextField("Additional Info");
+  TextArea additionalInfo = new TextArea("Additional Info");
 
   /* Action buttons */
   Button save = new Button("Save", VaadinIcon.CHECK.create());
@@ -122,7 +123,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
     repository.delete(institution);
 
     Notification notify = Notification
-        .show("City with id # " + institutionId + " deleted", DEFAULT_SHOW_TIME,
+        .show("Institution with id # " + institutionId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
@@ -133,7 +134,7 @@ public class InstitutionEditor extends VerticalLayout implements KeyNotifier {
     repository.save(institution);
 
     Notification notify = Notification
-        .show("City with name " + institution.getName() + " saved", DEFAULT_SHOW_TIME,
+        .show("Institution with name " + institution.getName() + " saved", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 

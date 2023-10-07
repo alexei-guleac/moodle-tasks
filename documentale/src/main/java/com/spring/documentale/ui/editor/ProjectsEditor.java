@@ -26,6 +26,7 @@ import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -47,7 +48,7 @@ public class ProjectsEditor extends VerticalLayout implements KeyNotifier {
 
   /* Fields to edit properties in User entity */
   TextField name = new TextField("Name");
-  TextField additionalInfo = new TextField("Additional Info");
+  TextArea additionalInfo = new TextArea("Additional Info");
 
   ComboBox<Institution> institutionComboBox = new ComboBox<>("Institution");
   ComboBox<User> userCreatedComboBox = new ComboBox<>("User created");
@@ -202,7 +203,7 @@ public class ProjectsEditor extends VerticalLayout implements KeyNotifier {
     repository.delete(project);
 
     Notification notify = Notification
-        .show("City with id # " + institutionId + " deleted", DEFAULT_SHOW_TIME,
+        .show("Project with id # " + institutionId + " deleted", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_CONTRAST);
 
@@ -213,7 +214,7 @@ public class ProjectsEditor extends VerticalLayout implements KeyNotifier {
     repository.save(project);
 
     Notification notify = Notification
-        .show("City with name " + project.getName() + " saved", DEFAULT_SHOW_TIME,
+        .show("Project with name " + project.getName() + " saved", DEFAULT_SHOW_TIME,
             Position.BOTTOM_END);
     notify.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
