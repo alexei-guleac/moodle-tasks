@@ -2,6 +2,7 @@ package com.spring.documentale.ui.view.report;
 
 
 import static com.spring.documentale.constants.ElementsSize.SHORT_GRID_HEIGHT;
+import static com.spring.documentale.ui.view.report.DocumentsDesignView.showDetails;
 import static com.spring.documentale.util.ui.GridUtils.createMenuToggle;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -184,6 +185,11 @@ public class DocumentsSlaView extends VerticalLayout {
     Column<Documents> settingColumn = grid.addColumn(box -> "").setWidth("auto").setFlexGrow(0);
     grid.getHeaderRows().get(0).getCell(settingColumn)
         .setComponent(createMenuToggle(toggleableColumns));
+
+        /* Connect selected Customer to editor or hide if none
+            is selected */
+    grid.asSingleSelect().addValueChangeListener(showDetails());
+
   }
 
   void listDocuments(String filterText) {

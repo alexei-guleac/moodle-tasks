@@ -1,6 +1,8 @@
 package com.spring.documentale.ui.view.report;
 
 
+import static com.spring.documentale.constants.DateTime.CUSTOM_FORMATTER;
+import static com.spring.documentale.constants.ElementsSize.DEFAULT_INDEX_MAX_WIDTH;
 import static com.spring.documentale.constants.ElementsSize.SHORT_GRID_HEIGHT;
 import static com.spring.documentale.util.ui.GridUtils.createMenuToggle;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -14,14 +16,19 @@ import com.spring.documentale.model.enums.DocumentType;
 import com.spring.documentale.repository.DocumentRepository;
 import com.spring.documentale.repository.DocumentTypeIerarchyRepository;
 import com.spring.documentale.repository.DocumentTypeRepository;
+import com.spring.documentale.ui.context.DocumentsContextMenu;
 import com.spring.documentale.ui.view.parent.BankOperatorView;
+import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +137,9 @@ public class DocumentsDesignView extends VerticalLayout {
     HorizontalLayout gridLayout = new HorizontalLayout(accordion, grid);
     gridLayout.setWidthFull();
 
-    add(toggleButton, actions, gridLayout);
+    DocumentsContextMenu contextMenu = new DocumentsContextMenu(grid);
+
+    add(toggleButton, actions, gridLayout, contextMenu);
 
     setupGrid();
 
@@ -146,6 +156,33 @@ public class DocumentsDesignView extends VerticalLayout {
     listDocuments(null);
   }
 
+  static ValueChangeListener<ComponentValueChangeEvent<Grid<Documents>, Documents>> showDetails() {
+    return selection -> {
+      Optional<Documents> issueOptional = Optional.ofNullable(selection.getValue());
+      if (issueOptional.isPresent()) {
+        Dialog dialog = new Dialog();
+        final Documents documents = issueOptional.get();
+
+        dialog.add(new H4("Documents id # "), new Text(documents.getId().toString()));
+        dialog.add(new H4("Institution id: "), new Text(documents.getInstitutionId().toString()));
+        dialog.add(new H4("User id: "), new Text(documents.getUserCreatedId().toString()));
+        dialog.add(new H4("DocumentType: "), new Text(documents.getDocumentTypesId().toString()));
+        dialog.add(new H4("Project id: "), new Text(documents.getProjectId().toString()));
+        dialog.add(new H4("Name: "), new Text(documents.getName()));
+        dialog.add(new H4("Saved path: "), new Text(documents.getSavedPath()));
+        dialog.add(new H4("Upload date: "),
+            new Text(documents.getUploadDate().format(CUSTOM_FORMATTER)));
+        dialog.add(new H4("Grouping date: "),
+            new Text(documents.getGroupingDate().format(CUSTOM_FORMATTER)));
+        dialog.add(new H4("Additional info: "), new Text(documents.getAdditionalInfo()));
+
+        dialog.setWidthFull();
+        dialog.setMinWidth("200px");
+        dialog.setMaxWidth(DEFAULT_INDEX_MAX_WIDTH);
+        dialog.open();
+      }
+    };
+  }
 
   private void setupGrid() {
     grid.setHeight(SHORT_GRID_HEIGHT);
@@ -184,6 +221,11 @@ public class DocumentsDesignView extends VerticalLayout {
     Column<Documents> settingColumn = grid.addColumn(box -> "").setWidth("auto").setFlexGrow(0);
     grid.getHeaderRows().get(0).getCell(settingColumn)
         .setComponent(createMenuToggle(toggleableColumns));
+
+        /* Connect selected Customer to editor or hide if none
+            is selected */
+    grid.asSingleSelect().addValueChangeListener(showDetails());
+
   }
 
   void listDocuments(String filterText) {
