@@ -15,6 +15,7 @@ import com.spring.documentale.model.enums.DocumentType;
 import com.spring.documentale.repository.DocumentRepository;
 import com.spring.documentale.repository.DocumentTypeIerarchyRepository;
 import com.spring.documentale.repository.DocumentTypeRepository;
+import com.spring.documentale.ui.context.DocumentsContextMenu;
 import com.spring.documentale.ui.view.parent.BankOperatorView;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -23,7 +24,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -31,6 +34,7 @@ import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.Lumo;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -130,7 +134,9 @@ public class DocumentsSlaView extends VerticalLayout {
     HorizontalLayout gridLayout = new HorizontalLayout(accordion, grid);
     gridLayout.setWidthFull();
 
-    add(toggleButton, actions, gridLayout);
+    DocumentsContextMenu contextMenu = new DocumentsContextMenu(grid);
+
+    add(toggleButton, actions, gridLayout, contextMenu);
 
     setupGrid();
 
@@ -175,13 +181,33 @@ public class DocumentsSlaView extends VerticalLayout {
         )
     ).setHeader("Grouping Date").setAutoWidth(true).setFlexGrow(0);
 
+    final String download = "Download";
+    final Column<Documents> column = grid.addComponentColumn(t -> {
+
+      String savedPath = t.getSavedPath();
+      System.out.println("Saved path  =" + savedPath);
+      String[] split = savedPath.split("/");
+      String name1 = (split[split.length - 1]);
+      System.out.println(name1);
+
+      StreamResource streamResource = new StreamResource(name1,
+          () -> getClass().getResourceAsStream("/" + name1));
+      Anchor anchor = new Anchor(streamResource, "Download");
+      anchor.getElement().setAttribute("download", name1);
+      Button d = new Button(VaadinIcon.DOWNLOAD.create());
+      anchor.add(d);
+      return anchor;
+    }).setWidth("100px").setFlexGrow(0);
+    column.setHeader(download);
+
     grid.getColumns()
         .forEach(userColumn -> {
           final String key = userColumn.getKey();
-          if (isNotBlank(key)) {
+          if (isNotBlank(key) && !key.equals(download)) {
             toggleableColumns.put(userColumn, key);
           }
         });
+
     Column<Documents> settingColumn = grid.addColumn(box -> "").setWidth("auto").setFlexGrow(0);
     grid.getHeaderRows().get(0).getCell(settingColumn)
         .setComponent(createMenuToggle(toggleableColumns));
